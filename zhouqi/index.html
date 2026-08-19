@@ -11,12 +11,31 @@
   <style>
     :root {
       color-scheme: dark;
-      --bg-base: #12151a; --bg-panel: #181c23; --bg-raised: #1f242d; --bg-float: #272d38;
-      --border: #242a33; --border-strong: #303840;
-      --text-strong: #e6e8eb; --text: #a8b0bc; --text-muted: #848c98; --text-faint: #5d6572;
-      --brand: #f5a524; --brand-fg: #0a0d12; --brand-soft: rgba(245, 165, 36, 0.15);
-      --rise: #ef4d4d; --fall: #00c896;
-      --info: #3da9fc;
+      /* — surfaces (warm-tinted neutrals) — */
+      --bg-base: oklch(9.5% 0.008 60);
+      --bg-panel: oklch(13% 0.008 60);
+      --bg-raised: oklch(16.5% 0.008 60);
+      --bg-float: oklch(20% 0.008 60);
+      /* — borders — */
+      --border: oklch(18% 0.006 60);
+      --border-strong: oklch(24% 0.006 60);
+      /* — text — */
+      --text-strong: oklch(92% 0.005 60);
+      --text: oklch(72% 0.008 60);
+      --text-muted: oklch(56% 0.008 60);
+      --text-faint: oklch(42% 0.008 60);
+      /* — accent: amber (brand) — */
+      --brand: oklch(78% 0.16 75);
+      --brand-fg: oklch(10% 0.02 75);
+      --brand-soft: oklch(78% 0.16 75 / 0.12);
+      /* — accent: slate-blue (information) — */
+      --accent: oklch(68% 0.08 250);
+      --accent-soft: oklch(68% 0.08 250 / 0.12);
+      /* — semantic — */
+      --rise: oklch(62% 0.2 25);
+      --fall: oklch(72% 0.18 160);
+      --info: oklch(68% 0.08 250);
+      /* — typography — */
       --font-display: "Space Grotesk", "Inter", "Noto Sans SC", sans-serif;
       --font-sans: "Inter", "Noto Sans SC", "PingFang SC", sans-serif;
       --font-mono: "IBM Plex Mono", monospace;
@@ -29,7 +48,7 @@
       --radius-3: 6px; --radius-4: 8px;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg-base); color: var(--text); font-family: var(--font-sans); font-size: var(--fs-body); line-height: var(--lh-normal); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+    body { background: var(--bg-base); color: var(--text); font-family: var(--font-sans); font-size: var(--fs-body); line-height: var(--lh-normal); -webkit-font-smoothing: antialiased; min-height: 100vh; font-variant-numeric: tabular-nums; }
     .container { max-width: 960px; margin: 0 auto; padding: var(--space-7) var(--space-6); }
     @media (max-width: 768px) { .container { padding: var(--space-5) var(--space-4); } }
 

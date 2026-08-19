@@ -10,96 +10,140 @@
   <style>
     :root {
       color-scheme: dark;
-      --bg-base: #12151a; --bg-panel: #181c23; --bg-raised: #1f242d;
-      --border: #242a33; --border-strong: #303840;
-      --text-strong: #e6e8eb; --text: #a8b0bc; --text-muted: #848c98;
-      --brand: #f5a524; --brand-fg: #0a0d12; --brand-soft: rgba(245, 165, 36, 0.15);
+      /* — surfaces (warm-tinted neutrals) — */
+      --bg-base: oklch(9.5% 0.008 60);
+      --bg-panel: oklch(13% 0.008 60);
+      --bg-raised: oklch(16.5% 0.008 60);
+      /* — borders — */
+      --border: oklch(18% 0.006 60);
+      --border-strong: oklch(24% 0.006 60);
+      /* — text — */
+      --text-strong: oklch(92% 0.005 60);
+      --text: oklch(72% 0.008 60);
+      --text-muted: oklch(56% 0.008 60);
+      --text-faint: oklch(42% 0.008 60);
+      /* — accent: amber (brand) — */
+      --brand: oklch(78% 0.16 75);
+      --brand-fg: oklch(10% 0.02 75);
+      --brand-soft: oklch(78% 0.16 75 / 0.12);
+      /* — accent: slate-blue (information) — */
+      --accent: oklch(68% 0.08 250);
+      --accent-soft: oklch(68% 0.08 250 / 0.12);
+      /* — semantic — */
+      --rise: oklch(62% 0.2 25);
+      --fall: oklch(72% 0.18 160);
+      /* — z-index scale — */
+      --z-base: 1;
+      --z-overlay: 100;
+      --z-modal: 200;
+      /* — typography — */
       --font-display: "Space Grotesk", "Inter", "Noto Sans SC", sans-serif;
       --font-sans: "Inter", "Noto Sans SC", sans-serif;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg-base); color: var(--text); font-family: var(--font-sans); min-height: 100vh; }
+    body { background: var(--bg-base); color: var(--text); font-family: var(--font-sans); min-height: 100vh; overflow-x: clip; }
 
     /* 登录遮罩 */
     .login-overlay {
-      position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1000;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: var(--z-modal);
       background: var(--bg-base);
-      display: flex; align-items: center; justify-content: center;
-      transition: opacity 0.4s ease;
+      display: flex; align-items: center; justify-content: flex-start; padding-left: 12%;
+      transition: opacity 0.35s var(--ease-out, ease);
     }
     .login-overlay.hidden { opacity: 0; pointer-events: none; }
     .login-box {
-      background: var(--bg-panel); border: 1px solid var(--border); border-radius: 16px;
-      padding: 48px 40px; width: 380px; max-width: 90vw; text-align: center;
+      background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px;
+      padding: 36px 32px; width: 360px; max-width: 90vw; text-align: left;
     }
-    .login-box .brand { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 32px; }
-    .login-box .brand-icon { width: 48px; height: 48px; background: var(--brand); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--brand-fg); font-size: 24px; font-weight: 700; }
-    .login-box .brand-name { font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--brand); }
-    .login-box h2 { font-size: 18px; font-weight: 600; color: var(--text-strong); margin-bottom: 8px; }
-    .login-box .login-hint { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+    .login-box .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+    .login-box .brand-icon { width: 40px; height: 40px; background: var(--brand); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--brand-fg); font-size: 20px; font-weight: 700; }
+    .login-box .brand-name { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--brand); }
+    .login-box h2 { font-size: 17px; font-weight: 600; color: var(--text-strong); margin-bottom: 6px; }
+    .login-box .login-hint { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
     .login-box input {
-      width: 100%; padding: 14px 16px; background: var(--bg-raised); border: 1px solid var(--border);
-      border-radius: 8px; color: var(--text-strong); font-size: 20px; font-family: var(--font-display);
-      text-align: center; letter-spacing: 0.3em; outline: none; transition: border-color 0.2s;
+      width: 100%; padding: 12px 14px; background: var(--bg-raised); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text-strong); font-size: 20px; font-family: var(--font-display);
+      text-align: center; letter-spacing: 0.3em; outline: none; transition: border-color 0.15s ease;
     }
-    .login-box input:focus { border-color: var(--brand); }
+    .login-box input:focus-visible { border-color: var(--brand); outline: 2px solid var(--brand); outline-offset: 2px; }
     .login-box input::placeholder { letter-spacing: normal; font-size: 14px; color: var(--text-muted); }
     .login-box .login-btn {
-      width: 100%; margin-top: 16px; padding: 14px; background: var(--brand); color: var(--brand-fg);
-      border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer;
-      transition: opacity 0.2s;
+      width: 100%; margin-top: 14px; padding: 12px; background: var(--brand); color: var(--brand-fg);
+      border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer;
+      transition: background-color 0.15s ease;
     }
-    .login-box .login-btn:hover { opacity: 0.9; }
-    .login-box .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .login-error { font-size: 13px; color: #ef4d4d; margin-top: 12px; min-height: 20px; }
+    .login-box .login-btn:hover { background: oklch(82% 0.16 75); }
+    .login-box .login-btn:disabled { background: var(--bg-raised); color: var(--text-muted); cursor: not-allowed; }
+    .login-error { font-size: 13px; color: var(--rise); margin-top: 10px; min-height: 20px; }
 
     /* 欢迎横幅 */
     .welcome-bar {
-      display: none; background: linear-gradient(135deg, rgba(245,165,36,0.08) 0%, rgba(245,165,36,0.02) 100%);
-      border-bottom: 1px solid var(--border); padding: 14px 24px;
+      display: none; background: var(--bg-panel);
+      border-bottom: 1px solid var(--border); padding: 12px 24px;
     }
     .welcome-bar.show { display: flex; align-items: center; justify-content: space-between; }
-    .welcome-info { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text); }
+    .welcome-info { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text); font-variant-numeric: tabular-nums; }
     .welcome-info .user-name { color: var(--brand); font-weight: 600; }
     .welcome-info .user-product { color: var(--text-strong); font-weight: 500; }
-    .welcome-info .sep { color: var(--border-strong); margin: 0 4px; }
+    .welcome-info .sep { color: var(--border-strong); margin: 0 2px; }
     .logout-btn {
       background: none; border: 1px solid var(--border); color: var(--text-muted);
-      padding: 6px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.2s;
+      padding: 5px 12px; border-radius: 4px; font-size: 12px; cursor: pointer;
+      transition: border-color 0.15s ease, color 0.15s ease;
     }
-    .logout-btn:hover { border-color: var(--brand); color: var(--brand); }
+    .logout-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-    /* 主内容 */
-    .main-wrap { display: flex; flex-direction: column; min-height: 100vh; }
-    .main-content { flex: 1; display: flex; align-items: center; justify-content: center; }
-    .landing { text-align: center; max-width: 640px; padding: 48px 24px; }
-    .brand { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 48px; }
-    .brand-icon { width: 48px; height: 48px; background: var(--brand); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--brand-fg); font-size: 24px; font-weight: 700; }
-    .brand-name { font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--brand); }
-    h1 { font-size: 32px; font-weight: 600; color: var(--text-strong); margin-bottom: 12px; }
-    .subtitle { font-size: 16px; color: var(--text-muted); margin-bottom: 48px; }
-    .products { display: flex; flex-direction: column; gap: 20px; }
-    .product-card {
-      display: block; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px;
-      padding: 32px; text-decoration: none; transition: all 0.25s ease; text-align: left;
+    /* 主内容 — asymmetric layout */
+    .main-content {
+      display: grid; grid-template-columns: 1fr 1fr; min-height: 100vh;
     }
-    .product-card:hover { border-color: var(--brand); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245, 165, 36, 0.1); }
-    .product-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
-    .product-badge { padding: 4px 12px; background: var(--brand-soft); color: var(--brand); font-size: 11px; font-weight: 600; border-radius: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
-    .product-name { font-size: 20px; font-weight: 600; color: var(--text-strong); margin-bottom: 8px; }
-    .product-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
-    .product-meta { display: flex; gap: 24px; margin-top: 16px; font-size: 13px; color: var(--text-muted); }
-    .product-meta span { display: flex; align-items: center; gap: 6px; }
-    .meta-label { color: #848c98; }
+    .main-left {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 64px 48px 64px 12%;
+    }
+    .main-right {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 64px 12% 64px 48px; border-left: 1px solid var(--border);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; }
+    .brand-icon { width: 40px; height: 40px; background: var(--brand); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: var(--brand-fg); font-size: 20px; font-weight: 700; }
+    .brand-name { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--brand); }
+    h1 { font-size: 36px; font-weight: 700; color: var(--text-strong); margin-bottom: 12px; line-height: 1.15; }
+    .subtitle { font-size: 15px; color: var(--text-muted); margin-bottom: 24px; }
+    .compliance-tip { font-size: 11px; color: var(--text-faint); margin-top: 24px; }
+    .footer { margin-top: 32px; font-size: 12px; color: var(--text-faint); line-height: 1.8; }
+
+    .products { display: flex; flex-direction: column; gap: 16px; }
+    .product-card {
+      display: block; background: var(--bg-raised); border: 1px solid var(--border); border-radius: 8px;
+      padding: 24px; text-decoration: none; text-align: left;
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+    .product-card:hover { border-color: var(--brand); background: oklch(18% 0.008 60); }
+    .product-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .product-badge { padding: 3px 10px; background: var(--brand-soft); color: var(--brand); font-size: 11px; font-weight: 600; border-radius: 3px; letter-spacing: 0.04em; }
+    .product-name { font-size: 17px; font-weight: 600; color: var(--text-strong); margin-bottom: 6px; }
+    .product-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+    .product-meta { display: flex; gap: 20px; margin-top: 12px; font-size: 12px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+    .product-meta span { display: flex; align-items: center; gap: 5px; }
+    .meta-label { color: var(--text-muted); }
     .meta-value { color: var(--text-strong); font-weight: 500; }
-    .blur-val { filter: blur(6px); user-select: none; transition: filter 0.3s; }
+    .blur-val { filter: blur(6px); user-select: none; transition: filter 0.25s ease; }
     .product-card:hover .blur-val { filter: blur(0); }
-    .compliance-tip { font-size: 11px; color: #5d6572; margin-top: 6px; }
-    .footer { margin-top: 48px; font-size: 13px; color: #5d6572; }
+
+    @media (max-width: 768px) {
+      .main-content { grid-template-columns: 1fr; }
+      .main-left { padding: 48px 24px 32px; }
+      .main-right { padding: 32px 24px 48px; border-left: none; border-top: 1px solid var(--border); }
+      .login-overlay { justify-content: center; padding-left: 0; }
+      h1 { font-size: 28px; }
+    }
     @media (max-width: 480px) {
-      h1 { font-size: 24px; } .product-card { padding: 24px; }
+      .main-left, .main-right { padding: 32px 16px; }
+      .product-card { padding: 20px; }
+      .product-meta { flex-wrap: wrap; gap: 12px; }
       .welcome-bar.show { flex-direction: column; gap: 8px; text-align: center; }
-      .login-box { padding: 32px 24px; }
+      .login-box { padding: 28px 20px; }
     }
   </style>
 </head>
@@ -134,46 +178,50 @@
     <button class="logout-btn" id="logoutBtn">退出登录</button>
   </div>
 
-  <!-- 主内容 -->
+  <!-- 主内容 — 左右分栏 -->
   <div class="main-content">
-  <div class="landing">
-    <div class="brand">
-      <div class="brand-icon">晟</div>
-      <div class="brand-name">晟孚资本</div>
+    <div class="main-left">
+      <div class="brand">
+        <div class="brand-icon">晟</div>
+        <div class="brand-name">晟孚资本</div>
+      </div>
+      <h1>基金产品<br>月度报告</h1>
+      <p class="subtitle">2026年7月 · 选择产品查看详细报告</p>
+      <p class="compliance-tip">* 业绩数据已脱敏处理，悬停可查看。详细业绩请登录合格投资者平台查阅。</p>
+      <div class="footer">
+        © 2026 晟孚资本 · SHENGFU CAPITAL<br>
+        基金管理人等级编号：P1010913<br>
+        本报告仅面向合格投资者
+      </div>
     </div>
-    <h1>基金产品月报</h1>
-    <p class="subtitle">2026年7月 · 选择产品查看详细报告</p>
-    <div class="products">
-      <a href="./zhouqi/" class="product-card">
-        <div class="product-header">
-          <span class="product-badge">周期策略</span>
-        </div>
-        <div class="product-name">晟孚泽鑫周期私募证券投资基金</div>
-        <div class="product-desc">聚焦周期行业轮动机会，重点配置有色金属、化工、建材等顺周期板块，捕捉经济复苏带来的超额收益。</div>
-        <div class="product-meta">
-          <span><span class="meta-label">基金代码</span> <span class="meta-value">SFF2024001</span></span>
-          <span><span class="meta-label">基金经理</span> <span class="meta-value">张璇</span></span>
-          <span><span class="meta-label">月度收益</span> <span class="meta-value blur-val" style="color:#ef4d4d">+6.18%</span></span>
-        </div>
-      </a>
-      <a href="./jiazhi/" class="product-card">
-        <div class="product-header">
-          <span class="product-badge">周期策略</span>
-        </div>
-        <div class="product-name">晟孚泽鑫价值私募证券投资基金</div>
-        <div class="product-desc">聚焦大宗商品和稀缺资源领域，坚持低估值、集中投资、中长线持有，在高度不确定的市场中寻找确定性。</div>
-        <div class="product-meta">
-          <span><span class="meta-label">基金代码</span> <span class="meta-value">SBUX78</span></span>
-          <span><span class="meta-label">基金经理</span> <span class="meta-value">刘备</span></span>
-          <span><span class="meta-label">月度收益</span> <span class="meta-value blur-val" style="color:#ef4d4d">+4.82%</span></span>
-        </div>
-      </a>
+    <div class="main-right">
+      <div class="products">
+        <a href="./zhouqi/" class="product-card">
+          <div class="product-header">
+            <span class="product-badge">周期策略</span>
+          </div>
+          <div class="product-name">晟孚泽鑫周期私募证券投资基金</div>
+          <div class="product-desc">聚焦周期行业轮动机会，重点配置有色金属、化工、建材等顺周期板块，捕捉经济复苏带来的超额收益。</div>
+          <div class="product-meta">
+            <span><span class="meta-label">基金代码</span> <span class="meta-value">SFF2024001</span></span>
+            <span><span class="meta-label">基金经理</span> <span class="meta-value">张璇</span></span>
+            <span><span class="meta-label">月度收益</span> <span class="meta-value blur-val" style="color:var(--rise)">+6.18%</span></span>
+          </div>
+        </a>
+        <a href="./jiazhi/" class="product-card">
+          <div class="product-header">
+            <span class="product-badge">周期策略</span>
+          </div>
+          <div class="product-name">晟孚泽鑫价值私募证券投资基金</div>
+          <div class="product-desc">聚焦大宗商品和稀缺资源领域，坚持低估值、集中投资、中长线持有，在高度不确定的市场中寻找确定性。</div>
+          <div class="product-meta">
+            <span><span class="meta-label">基金代码</span> <span class="meta-value">SBUX78</span></span>
+            <span><span class="meta-label">基金经理</span> <span class="meta-value">刘备</span></span>
+            <span><span class="meta-label">月度收益</span> <span class="meta-value blur-val" style="color:var(--rise)">+4.82%</span></span>
+          </div>
+        </a>
+      </div>
     </div>
-    <p class="compliance-tip">* 业绩数据已脱敏处理，悬停可查看。详细业绩请登录合格投资者平台查阅。</p>
-    <div class="footer">
-      © 2026 晟孚资本 · SHENGFU CAPITAL · 基金管理人等级编号：P1010913<br>本报告仅面向合格投资者
-    </div>
-  </div>
   </div>
 
   <script>
