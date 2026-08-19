@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>晟孚泽鑫价值私募证券投资基金 · 月报</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-base: #12151a; --bg-panel: #181c23; --bg-raised: #1f242d; --bg-float: #272d38;
+      --border: #242a33; --border-strong: #303840; --divider: #424a56;
+      --text-strong: #e6e8eb; --text: #a8b0bc; --text-muted: #848c98; --text-faint: #5d6572;
+      --brand: #f5a524; --brand-fg: #0a0d12; --brand-soft: rgba(245, 165, 36, 0.15);
+      --rise: #ef4d4d; --fall: #00c896;
+      --info: #3da9fc; --info-soft: rgba(61, 169, 252, 0.15);
+      --viz: #f5a524, #3da9fc, #a872f5, #00c896, #ff6b9b, #5be584, #ffc857, #7d8df5;
+      --font-display: "Space Grotesk", "Inter", "Noto Sans SC", sans-serif;
+      --font-sans: "Inter", "Noto Sans SC", "PingFang SC", sans-serif;
+      --font-mono: "IBM Plex Mono", monospace;
+      --fs-xs: 11px; --fs-sm: 12px; --fs-body: 14px; --fs-lead: 16px;
+      --fs-h3: 20px; --fs-h2: 28px;
+      --lh-tight: 1.15; --lh-normal: 1.6;
+      --fw-regular: 400; --fw-medium: 500; --fw-semibold: 600; --fw-bold: 700;
+      --space-2: 4px; --space-3: 8px; --space-4: 12px; --space-5: 16px;
+      --space-6: 24px; --space-7: 32px; --space-8: 48px;
+      --radius-3: 6px; --radius-4: 8px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg-base); color: var(--text); font-family: var(--font-sans); font-size: var(--fs-body); line-height: var(--lh-normal); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+    table { border-collapse: collapse; width: 100%; }
+    .container { max-width: 960px; margin: 0 auto; padding: var(--space-7) var(--space-6); }
+    @media (max-width: 768px) { .container { padding: var(--space-5) var(--space-4); } }
+
+    .header { display: flex; align-items: flex-start; justify-content: space-between; padding-bottom: var(--space-7); border-bottom: 1px solid var(--border); margin-bottom: var(--space-7); }
+    .header-left { display: flex; flex-direction: column; gap: var(--space-3); }
+    .brand { display: flex; align-items: center; gap: var(--space-3); font-family: var(--font-display); font-size: var(--fs-h3); font-weight: var(--fw-bold); color: var(--brand); }
+    .brand-icon { width: 36px; height: 36px; background: var(--brand); border-radius: var(--radius-3); display: flex; align-items: center; justify-content: center; color: var(--brand-fg); font-weight: var(--fw-bold); }
+    .fund-name { font-size: var(--fs-h2); font-weight: var(--fw-semibold); color: var(--text-strong); line-height: var(--lh-tight); }
+    .fund-meta { font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--text-muted); }
+    .header-right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: var(--space-2); }
+    .period { font-size: var(--fs-h3); font-weight: var(--fw-semibold); color: var(--text-strong); }
+    .period-range { font-size: var(--fs-sm); color: var(--text-muted); }
+    .badge { display: inline-flex; padding: var(--space-1) var(--space-3); background: var(--brand-soft); color: var(--brand); font-size: var(--fs-xs); font-weight: var(--fw-medium); border-radius: 2px; letter-spacing: 0.04em; text-transform: uppercase; }
+    @media (max-width: 600px) { .header { flex-direction: column; gap: var(--space-5); } .header-right { align-items: flex-start; text-align: left; } }
+
+    .section { margin-bottom: var(--space-8); }
+    .section-hd { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-6); }
+    .section-hd::before { content: ""; width: 3px; height: 20px; background: var(--brand); border-radius: 2px; }
+    .section-title { font-size: var(--fs-h3); font-weight: var(--fw-semibold); color: var(--text-strong); }
+    .section-tag { font-size: var(--fs-sm); color: var(--text-muted); margin-left: auto; }
+
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-5); }
+    @media (max-width: 768px) { .metrics { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px) { .metrics { grid-template-columns: 1fr; } }
+    .metric { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-4); padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); transition: border-color 0.2s; }
+    .metric:hover { border-color: var(--border-strong); }
+    .metric-label { font-size: var(--fs-xs); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: var(--fw-medium); }
+    .metric-val { font-family: var(--font-display); font-size: var(--fs-h2); font-weight: var(--fw-bold); color: var(--text-strong); line-height: var(--lh-tight); font-variant-numeric: tabular-nums; }
+    .metric-val.rise { color: var(--rise); } .metric-val.fall { color: var(--fall); }
+    .metric-note { font-size: 11px; color: var(--text-muted); }
+    .metric-unit { font-size: 0.5em; color: var(--text-muted); }
+
+    .chart-box { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-4); padding: var(--space-6); margin-bottom: var(--space-5); }
+    .chart-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-5); flex-wrap: wrap; gap: var(--space-3); }
+    .chart-title { font-size: var(--fs-lead); font-weight: var(--fw-semibold); color: var(--text-strong); }
+    .chart-wrap { width: 100%; height: 320px; }
+    @media (max-width: 768px) { .chart-wrap { height: 240px; } }
+
+    .period-tabs { display: flex; gap: var(--space-2); }
+    .period-tab {
+      padding: var(--space-2) var(--space-4); background: var(--bg-raised); border: 1px solid var(--border);
+      border-radius: var(--radius-3); font-size: var(--fs-sm); font-weight: var(--fw-medium);
+      color: var(--text-muted); cursor: pointer; transition: all 0.2s; user-select: none;
+    }
+    .period-tab:hover { border-color: var(--border-strong); color: var(--text); }
+    .period-tab.active { background: var(--brand-soft); border-color: var(--brand); color: var(--brand); }
+
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5); }
+    @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
+
+    .table-wrap { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-4); overflow: hidden; }
+    .table thead th { background: var(--bg-raised); padding: var(--space-4) var(--space-5); font-size: var(--fs-xs); font-weight: var(--fw-semibold); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; text-align: left; border-bottom: 1px solid var(--border-strong); white-space: nowrap; }
+    .table thead th:last-child, .table tbody td:last-child { text-align: right; }
+    .table tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    .table tbody tr:last-child { border-bottom: none; }
+    .table tbody tr:hover { background: rgba(255,255,255,0.03); }
+    .table tbody td { padding: var(--space-4) var(--space-5); font-size: var(--fs-sm); }
+    .stock-name { color: var(--text-strong); font-weight: var(--fw-medium); }
+    .stock-code { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-faint); margin-top: 2px; }
+    .wbar { display: flex; align-items: center; gap: var(--space-3); }
+    .wbar-track { flex: 1; height: 4px; background: var(--bg-float); border-radius: 2px; overflow: hidden; }
+    .wbar-fill { height: 100%; background: var(--brand); border-radius: 2px; }
+    .wbar-val { font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--text-strong); min-width: 44px; text-align: right; }
+
+    .comment { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-4); padding: var(--space-6); }
+    .comment h4 { font-size: var(--fs-lead); font-weight: var(--fw-semibold); color: var(--text-strong); margin-bottom: var(--space-4); }
+    .comment p { margin-bottom: var(--space-4); }
+    .comment p:last-child { margin-bottom: 0; }
+    .highlight { background: var(--brand-soft); border-left: 3px solid var(--brand); padding: var(--space-4) var(--space-5); border-radius: 0 var(--radius-3) var(--radius-3) 0; margin: var(--space-5) 0; color: var(--text-strong); }
+
+    .risk-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); margin-bottom: var(--space-5); }
+    @media (max-width: 600px) { .risk-grid { grid-template-columns: 1fr; } }
+    .risk-item { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-3); padding: var(--space-4) var(--space-5); display: flex; justify-content: space-between; align-items: center; }
+    .risk-label { font-size: var(--fs-sm); color: var(--text-muted); }
+    .risk-val { font-family: var(--font-mono); font-size: var(--fs-lead); font-weight: var(--fw-semibold); color: var(--text-strong); }
+
+    .disclaimer { background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-3); padding: var(--space-5); margin-top: var(--space-7); }
+    .disclaimer-hd { font-size: var(--fs-xs); font-weight: var(--fw-semibold); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: var(--space-3); }
+    .disclaimer p { font-size: var(--fs-xs); color: var(--text-faint); line-height: var(--lh-normal); }
+
+    .footer { margin-top: var(--space-8); padding-top: var(--space-6); border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-4); }
+    .footer-brand { font-family: var(--font-display); font-size: var(--fs-sm); color: var(--text-faint); font-weight: var(--fw-medium); }
+    .footer-meta { font-size: var(--fs-xs); color: var(--text-faint); text-align: right; }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .anim { animation: fadeUp 0.5s ease forwards; opacity: 0; }
+    .anim:nth-child(1) { animation-delay: 0.05s; } .anim:nth-child(2) { animation-delay: 0.1s; }
+    .anim:nth-child(3) { animation-delay: 0.15s; } .anim:nth-child(4) { animation-delay: 0.2s; }
+    @media (prefers-reduced-motion: reduce) { .anim { animation: none; opacity: 1; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header class="header">
+      <div class="header-left">
+        <div class="brand"><div class="brand-icon">晟</div><span>晟孚资本</span></div>
+        <div class="fund-name">晟孚泽鑫价值私募证券投资基金</div>
+        <div class="fund-meta">基金代码：SFF2024002 · 基金经理：刘备 · 私募基金管理人备案编号：P1070001</div>
+      </div>
+      <div class="header-right">
+        <div class="badge">MONTHLY REPORT</div>
+        <div class="period">2026年7月</div>
+        <div class="period-range">报告期：2026.07.01 - 2026.07.31</div>
+      </div>
+    </header>
+
+    <!-- 核心指标 -->
+    <section class="section">
+      <div class="section-hd"><h2 class="section-title">基金概况</h2></div>
+      <div class="metrics">
+        <div class="metric anim"><span class="metric-label">单位净值</span><span class="metric-val rise">1.2158</span><span class="metric-note">▲ 3.15%</span></div>
+        <div class="metric anim"><span class="metric-label">月度收益</span><span class="metric-val rise">+4.82%</span><span class="metric-note">同期基准 +2.35%</span></div>
+        <div class="metric anim"><span class="metric-label">基金规模</span><span class="metric-val">4.2<span class="metric-unit"> 亿</span></span><span class="metric-note">较上月 +0.2亿</span></div>
+        <div class="metric anim"><span class="metric-label">成立以来</span><span class="metric-val rise">+21.6%</span><span class="metric-note">年化 10.8%</span></div>
+      </div>
+    </section>
+
+    <!-- 业绩表现 -->
+    <section class="section">
+      <div class="section-hd"><h2 class="section-title">业绩表现</h2></div>
+      <div class="chart-box">
+        <div class="chart-hd">
+          <div class="chart-title" id="chartTitle">相对净值 · 本基金 vs 沪深300</div>
+          <div style="display:flex;align-items:center;gap:12px">
+            <div class="period-tabs" id="viewTabs">
+              <div class="period-tab active" data-view="relative">相对净值</div>
+              <div class="period-tab" data-view="actual">实际净值</div>
+            </div>
+            <div class="period-tabs" id="navTabs">
+              <div class="period-tab" data-range="1m">近1月</div>
+              <div class="period-tab" data-range="3m">近3月</div>
+              <div class="period-tab" data-range="6m">近6月</div>
+              <div class="period-tab active" data-range="1y">近1年</div>
+              <div class="period-tab" data-range="ytd">今年以来</div>
+              <div class="period-tab" data-range="all">成立以来</div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-wrap" id="navChart"></div>
+      </div>
+      <div class="two-col">
+        <div class="chart-box">
+          <div class="chart-title">收益对比</div>
+          <div class="chart-wrap" id="returnChart" style="height:260px"></div>
+        </div>
+        <div class="chart-box">
+          <div class="chart-title">月度收益分布</div>
+          <div class="chart-wrap" id="monthlyChart" style="height:260px"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 投资理念 -->
+    <section class="section">
+      <div class="section-hd"><h2 class="section-title">投资理念</h2></div>
+      <div class="comment">
+        <p>寒武纪投资体系的核心哲学是"在高度不确定的市场中寻找确定性"。我们认为，财富的本质是对生产资料的占有，买股票就是买企业，投资投的是确定性。其核心方法论是抓住"业绩持续增长与股价长期不涨"之间的矛盾——当一家公司产品持续涨价、净利润连续多年大幅增长，而股价却迟迟未动时，这种背离就构成了确定性的大机会。聚焦大宗商品和稀缺资源领域，坚持低估值、集中投资、中长线持有，以足够低的成本获得持仓勇气，耐心等待市场纠错。</p>
+        <p>在操作层面，体系奉行"六不六坚持"原则：不追热点、不信消息、不炒短线、不做预测、不买亏损、不进ST；坚持业绩、坚持稀缺性、坚持商品、坚持低估值、坚持集中、坚持中长线。买入时机关注放量涨停、跳空不补、新高回调三类技术信号，追求"买入之时，胜负已定"的确定感。</p>
+        <p>更宏观地看，该体系相信价格长期必然围绕价值波动，投资就是投国运——远离高估值泡沫，坚守能力圈，不懂不投，用认真的研究、独立的思考和大量的工作来支撑每一次决策。</p>
+      </div>
+    </section>
+
+    <!-- 市场展望 -->
+    <section class="section">
+      <div class="section-hd"><h2 class="section-title">市场展望</h2></div>
+      <div class="comment">
+        <h4>基金经理观点</h4>
+        <div class="highlight">7月大宗商品价格整体上行，本基金重点配置的稀缺资源和周期龙头贡献了显著超额收益，印证了"业绩增长与股价背离"的选股逻辑。</div>
+        <p>宏观层面，国内制造业PMI连续四个月位于扩张区间，基建投资增速回升，经济复苏动能持续增强。海外方面，美联储降息预期推动大宗商品价格上行，全球补库周期开启有利于资源品需求。</p>
+        <p>行业配置方面，我们聚焦三大方向：一是稀缺资源，铜铝锂等基本金属受益于新能源需求和供给约束，价格中枢有望上移；二是大宗商品，化工、建材等周期品库存处于低位，补库需求带动量价齐升；三是低估值龙头，业绩持续增长而股价滞涨的公司存在估值修复机会。</p>
+        <p>展望8月，我们继续践行"在不确定中寻找确定性"的投资哲学。聚焦大宗商品和稀缺资源领域，以足够低的成本持仓，耐心等待市场纠错。本基金将坚持低估值、集中投资、中长线持有的策略，恪守"六不六坚持"原则。</p>
+      </div>
+    </section>
+
+    <!-- 风险指标 -->
+    <section class="section">
+      <div class="section-hd"><h2 class="section-title">风险指标</h2></div>
+      <div class="risk-grid">
+        <div class="risk-item"><span class="risk-label">年化波动率</span><span class="risk-val">14.8%</span></div>
+        <div class="risk-item"><span class="risk-label">最大回撤</span><span class="risk-val">-8.6%</span></div>
+        <div class="risk-item"><span class="risk-label">夏普比率</span><span class="risk-val">1.52</span></div>
+      </div>
+      <div class="disclaimer">
+        <div class="disclaimer-hd">免责声明</div>
+        <p>本报告仅供参考，不构成任何投资建议。基金过往业绩不代表未来表现。投资有风险，投资者应仔细阅读基金合同、招募说明书等法律文件，充分了解产品风险收益特征，根据自身风险承受能力审慎决策。本报告信息来源于公开资料，基金管理人对信息准确性和完整性不作保证。本产品为私募基金，仅面向合格投资者，非公开宣传推介。</p>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-brand">晟孚资本 · SHENGFU CAPITAL</div>
+      <div class="footer-meta">
+        <div>报告生成日期：2026年8月5日</div>
+        <div>客服热线：400-666-8888 · www.shengfucapital.com</div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // ============================================================
+    // 净值数据 - 价值型基金（波动较小，走势稳健）
+    // ============================================================
+    const FULL_NAV_DATA = {
+      dates: [
+        '2024-08-16','2024-08-23','2024-08-30','2024-09-06','2024-09-13','2024-09-20','2024-09-27','2024-09-30',
+        '2024-10-11','2024-10-18','2024-10-25','2024-10-31','2024-11-08','2024-11-15','2024-11-22','2024-11-29',
+        '2024-12-06','2024-12-13','2024-12-20','2024-12-27','2024-12-31',
+        '2025-01-03','2025-01-10','2025-01-17','2025-01-24','2025-01-27',
+        '2025-02-07','2025-02-14','2025-02-21','2025-02-28',
+        '2025-03-07','2025-03-14','2025-03-21','2025-03-28','2025-03-31',
+        '2025-04-03','2025-04-11','2025-04-18','2025-04-25','2025-04-30',
+        '2025-05-09','2025-05-16','2025-05-23','2025-05-30',
+        '2025-06-06','2025-06-13','2025-06-20','2025-06-27','2025-06-30',
+        '2025-07-04','2025-07-11','2025-07-18','2025-07-25','2025-07-31',
+        '2025-08-08','2025-08-15','2025-08-22','2025-08-29',
+        '2025-09-05','2025-09-12','2025-09-19','2025-09-26','2025-09-30',
+        '2025-10-10','2025-10-17','2025-10-24','2025-10-31',
+        '2025-11-07','2025-11-14','2025-11-21','2025-11-28',
+        '2025-12-05','2025-12-12','2025-12-19','2025-12-26','2025-12-31',
+        '2026-01-02','2026-01-09','2026-01-16','2026-01-23','2026-01-30',
+        '2026-02-06','2026-02-13','2026-02-27',
+        '2026-03-06','2026-03-13','2026-03-20','2026-03-27','2026-03-31',
+        '2026-04-03','2026-04-10','2026-04-17','2026-04-24','2026-04-30',
+        '2026-05-08','2026-05-15','2026-05-22','2026-05-29',
+        '2026-06-05','2026-06-12','2026-06-19','2026-06-26','2026-06-30',
+        '2026-07-03','2026-07-10','2026-07-17','2026-07-24','2026-07-31',
+      ],
+      nav: [
+        1.0000,1.0025,1.0062,1.0088,1.0048,1.0082,1.0115,1.0142,
+        1.0178,1.0145,1.0198,1.0228,1.0205,1.0252,1.0288,1.0312,
+        1.0285,1.0328,1.0365,1.0342,1.0378,
+        1.0352,1.0395,1.0428,1.0385,1.0412,
+        1.0448,1.0485,1.0462,1.0498,
+        1.0532,1.0498,1.0545,1.0578,1.0605,
+        1.0562,1.0608,1.0645,1.0612,1.0648,
+        1.0685,1.0652,1.0698,1.0732,
+        1.0698,1.0742,1.0778,1.0745,1.0782,
+        1.0818,1.0785,1.0825,1.0862,1.0898,
+        1.0862,1.0905,1.0942,1.0978,
+        1.0945,1.0985,1.1022,1.0988,1.1025,
+        1.1062,1.1028,1.1065,1.1098,
+        1.1065,1.1108,1.1145,1.1112,1.1148,
+        1.1185,1.1152,1.1192,1.1228,1.1205,
+        1.1245,1.1282,1.1318,1.1285,1.1322,
+        1.1358,1.1325,1.1398,
+        1.1435,1.1402,1.1442,1.1478,1.1505,
+        1.1468,1.1508,1.1542,1.1512,1.1548,
+        1.1582,1.1552,1.1588,1.1622,
+        1.1655,1.1625,1.1662,1.1698,1.1732,
+        1.1768,1.1812,1.1865,1.1942,1.2158,
+      ],
+      benchmark: [
+        1.0000,1.0018,1.0052,1.0085,1.0042,1.0078,1.0112,1.0145,
+        1.0178,1.0145,1.0198,1.0232,1.0212,1.0265,1.0312,1.0345,
+        1.0312,1.0365,1.0412,1.0385,1.0432,
+        1.0398,1.0445,1.0492,1.0445,1.0478,
+        1.0512,1.0565,1.0532,1.0578,
+        1.0612,1.0578,1.0632,1.0678,1.0712,
+        1.0665,1.0712,1.0765,1.0725,1.0778,
+        1.0832,1.0798,1.0845,1.0898,
+        1.0865,1.0912,1.0965,1.0932,1.0978,
+        1.1025,1.0998,1.1045,1.1098,1.1145,
+        1.1098,1.1145,1.1198,1.1232,
+        1.1198,1.1245,1.1298,1.1265,1.1312,
+        1.1358,1.1325,1.1378,1.1425,
+        1.1398,1.1445,1.1498,1.1465,1.1512,
+        1.1558,1.1525,1.1578,1.1625,1.1598,
+        1.1645,1.1698,1.1745,1.1712,1.1765,
+        1.1812,1.1778,1.1865,
+        1.1912,1.1878,1.1925,1.1978,1.2012,
+        1.1965,1.2012,1.2065,1.2032,1.2085,
+        1.2132,1.2098,1.2145,1.2198,
+        1.2245,1.2212,1.2265,1.2312,1.2358,
+        1.2412,1.2465,1.2512,1.2578,1.2625,
+      ],
+    };
+
+    const C = {
+      brand: '#f5a524', info: '#3da9fc', rise: '#ef4d4d', fall: '#00c896',
+      viz: ['#f5a524','#3da9fc','#a872f5','#00c896','#ff6b9b','#5be584','#ffc857','#7d8df5'],
+      text: '#a8b0bc', textMuted: '#848c98', textStrong: '#e6e8eb',
+      border: '#242a33', bgPanel: '#181c23', bgRaised: '#1f242d',
+    };
+    const grid = { left: 50, right: 20, top: 40, bottom: 30 };
+    const ax = {
+      axisLine: { lineStyle: { color: C.border } }, axisTick: { show: false },
+      axisLabel: { color: C.textMuted, fontSize: 11 },
+      splitLine: { lineStyle: { color: C.border, type: 'dashed' } },
+    };
+    const tp = { backgroundColor: C.bgRaised, borderColor: C.border, textStyle: { color: C.textStrong, fontSize: 12 } };
+
+    function filterByRange(range) {
+      const { dates, nav, benchmark } = FULL_NAV_DATA;
+      const lastDate = new Date(dates[dates.length - 1]);
+      let startDate;
+      switch (range) {
+        case '1m': startDate = new Date(lastDate); startDate.setMonth(startDate.getMonth() - 1); break;
+        case '3m': startDate = new Date(lastDate); startDate.setMonth(startDate.getMonth() - 3); break;
+        case '6m': startDate = new Date(lastDate); startDate.setMonth(startDate.getMonth() - 6); break;
+        case '1y': startDate = new Date(lastDate); startDate.setFullYear(startDate.getFullYear() - 1); break;
+        case 'ytd': startDate = new Date(lastDate.getFullYear(), 0, 1); break;
+        case 'all': default: startDate = new Date(dates[0]);
+      }
+      const startStr = startDate.toISOString().slice(0, 10);
+      const idx = dates.findIndex(d => d >= startStr);
+      return { dates: dates.slice(idx), nav: nav.slice(idx), benchmark: benchmark.slice(idx) };
+    }
+
+    const navChart = echarts.init(document.getElementById('navChart'));
+    let currentView = 'relative';
+    let currentRange = '1y';
+
+    function renderNavChart() {
+      const data = filterByRange(currentRange);
+      const titleEl = document.getElementById('chartTitle');
+
+      if (currentView === 'relative') {
+        // 相对净值：归一化后同时展示基金与沪深300，起点统一为1.0，不标记数值
+        const normNav = data.nav.map(v => v / data.nav[0]);
+        const normBench = data.benchmark.map(v => v / data.benchmark[0]);
+        const allVals = [...normNav, ...normBench];
+        const navMin = Math.min(...allVals) * 0.98;
+        titleEl.textContent = '相对净值 · 本基金 vs 沪深300';
+
+        navChart.setOption({
+          tooltip: {
+            trigger: 'axis', ...tp,
+            formatter: params => {
+              let html = `<div style="font-size:12px;color:${C.textStrong};margin-bottom:6px">${params[0].axisValue}</div>`;
+              params.forEach(p => {
+                const color = p.seriesName === '本基金' ? C.brand : C.info;
+                html += `<div style="display:flex;align-items:center;gap:6px;margin:3px 0">
+                  <span style="width:8px;height:8px;border-radius:50%;background:${color}"></span>
+                  <span style="color:${C.text}">${p.seriesName}：</span>
+                  <span style="color:${C.textStrong};font-weight:600;font-family:monospace">${p.value.toFixed(4)}</span>
+                </div>`;
+              });
+              const fR = ((normNav[normNav.length - 1] / normNav[0] - 1) * 100).toFixed(2);
+              const bR = ((normBench[normBench.length - 1] / normBench[0] - 1) * 100).toFixed(2);
+              const exR = (fR - bR).toFixed(2);
+              html += `<div style="border-top:1px solid ${C.border};margin-top:6px;padding-top:6px;font-size:11px">
+                <div style="color:${C.textMuted}">区间收益</div>
+                <div style="color:${fR >= 0 ? C.rise : C.fall}">本基金：${fR >= 0 ? '+' : ''}${fR}%</div>
+                <div style="color:${C.text}">沪深300：${bR >= 0 ? '+' : ''}${bR}%</div>
+                <div style="color:${exR >= 0 ? C.rise : C.fall}">超额：${exR >= 0 ? '+' : ''}${exR}%</div>
+              </div>`;
+              return html;
+            }
+          },
+          legend: { data: ['本基金', '沪深300'], right: 0, top: 0, textStyle: { color: C.textMuted, fontSize: 11 }, itemWidth: 16, itemHeight: 2 },
+          grid: { left: 50, right: 20, top: 40, bottom: 30 },
+          xAxis: { type: 'category', data: data.dates, ...ax, boundaryGap: false },
+          yAxis: { type: 'value', ...ax, min: navMin.toFixed(2) },
+          series: [
+            { name: '本基金', type: 'line', data: normNav, smooth: true, symbol: 'none', lineStyle: { width: 2, color: C.brand }, areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(245,165,36,0.12)' }, { offset: 1, color: 'rgba(245,165,36,0)' }] } } },
+            { name: '沪深300', type: 'line', data: normBench, smooth: true, symbol: 'none', lineStyle: { width: 1.5, color: C.info, type: 'dashed' } },
+          ],
+        }, true);
+      } else {
+        // 实际净值：仅展示基金净值走势，标记最新净值
+        const navMin = Math.min(...data.nav) * 0.98;
+        const totalReturn = ((data.nav[data.nav.length - 1] / data.nav[0] - 1) * 100).toFixed(2);
+        const latestVal = data.nav[data.nav.length - 1].toFixed(4);
+        const latestDate = data.dates[data.dates.length - 1];
+        titleEl.textContent = '实际净值 · 本基金';
+
+        navChart.setOption({
+          tooltip: {
+            trigger: 'axis', ...tp,
+            formatter: params => {
+              const p = params[0];
+              return `<div style="font-size:12px;color:${C.textStrong};margin-bottom:6px">${p.axisValue}</div>
+                <div style="display:flex;align-items:center;gap:6px;margin:3px 0">
+                  <span style="width:8px;height:8px;border-radius:50%;background:${C.brand}"></span>
+                  <span style="color:${C.text}">基金净值：</span>
+                  <span style="color:${C.textStrong};font-weight:600;font-family:monospace">${p.value.toFixed(4)}</span>
+                </div>
+                <div style="border-top:1px solid ${C.border};margin-top:6px;padding-top:6px;font-size:11px">
+                  <div style="color:${C.textMuted}">区间收益</div>
+                  <div style="color:${totalReturn >= 0 ? C.rise : C.fall}">${totalReturn >= 0 ? '+' : ''}${totalReturn}%</div>
+                </div>`;
+            }
+          },
+          legend: { show: false },
+          grid: { left: 50, right: 80, top: 40, bottom: 30 },
+          xAxis: { type: 'category', data: data.dates, ...ax, boundaryGap: false },
+          yAxis: { type: 'value', ...ax, min: navMin.toFixed(4) },
+          series: [
+            { name: '基金净值', type: 'line', data: data.nav, smooth: true, symbol: 'none', lineStyle: { width: 2, color: C.brand }, areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(245,165,36,0.12)' }, { offset: 1, color: 'rgba(245,165,36,0)' }] } },
+              markPoint: { symbol: 'circle', symbolSize: 6, label: { show: true, position: 'right', color: C.brand, fontSize: 12, fontWeight: 600, fontFamily: 'monospace', formatter: latestVal, offset: [4, 0] }, itemStyle: { color: C.brand }, data: [{ coord: [latestDate, data.nav[data.nav.length - 1]] }] } },
+          ],
+        }, true);
+      }
+    }
+    renderNavChart();
+
+    document.getElementById('viewTabs').addEventListener('click', e => {
+      const tab = e.target.closest('.period-tab');
+      if (!tab) return;
+      document.querySelectorAll('#viewTabs .period-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentView = tab.dataset.view;
+      renderNavChart();
+    });
+
+    document.getElementById('navTabs').addEventListener('click', e => {
+      const tab = e.target.closest('.period-tab');
+      if (!tab) return;
+      document.querySelectorAll('#navTabs .period-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      currentRange = tab.dataset.range;
+      renderNavChart();
+    });
+
+    const returnChart = echarts.init(document.getElementById('returnChart'));
+    returnChart.setOption({
+      tooltip: { trigger: 'axis', ...tp },
+      legend: { data: ['本基金', '沪深300'], right: 0, top: 0, textStyle: { color: C.textMuted, fontSize: 11 }, itemWidth: 16, itemHeight: 2 },
+      grid: { left: 50, right: 20, top: 40, bottom: 30 },
+      xAxis: { type: 'category', data: ['近1月', '近3月', '近6月', '近1年', '成立以来'], ...ax },
+      yAxis: { type: 'value', ...ax, axisLabel: { ...ax.axisLabel, formatter: '{value}%' } },
+      series: [
+        { name: '本基金', type: 'bar', data: [4.82, 9.8, 15.2, 22.5, 21.6], barWidth: 20, itemStyle: { color: C.brand, borderRadius: [3,3,0,0] } },
+        { name: '沪深300', type: 'bar', data: [2.35, 6.8, 11.2, 18.5, 26.3], barWidth: 20, itemStyle: { color: C.info, borderRadius: [3,3,0,0] } },
+      ],
+    });
+
+    const monthlyChart = echarts.init(document.getElementById('monthlyChart'));
+    const monthlyData = [
+      { m: '08', v: 1.25 }, { m: '09', v: -0.32 }, { m: '10', v: 2.18 }, { m: '11', v: 1.65 },
+      { m: '12', v: -0.85 }, { m: '01', v: 2.12 }, { m: '02', v: 2.45 }, { m: '03', v: -1.15 },
+      { m: '04', v: 2.85 }, { m: '05', v: 1.22 }, { m: '06', v: 1.88 }, { m: '07', v: 4.82 },
+    ];
+    monthlyChart.setOption({
+      tooltip: { trigger: 'axis', ...tp, formatter: p => `${p[0].name}月<br/>收益：<b style="color:${p[0].value >= 0 ? C.rise : C.fall}">${p[0].value >= 0 ? '+' : ''}${p[0].value}%</b>` },
+      grid: { left: 50, right: 20, top: 20, bottom: 30 },
+      xAxis: { type: 'category', data: monthlyData.map(d => d.m), ...ax },
+      yAxis: { type: 'value', ...ax, axisLabel: { ...ax.axisLabel, formatter: '{value}%' } },
+      series: [{ type: 'bar', data: monthlyData.map(d => d.v), barWidth: 18, itemStyle: { borderRadius: [3,3,0,0], color: p => p.value >= 0 ? C.rise : C.fall } }],
+    });
+
+    window.addEventListener('resize', () => { navChart.resize(); returnChart.resize(); monthlyChart.resize(); });
+  </script>
+</body>
+</html>

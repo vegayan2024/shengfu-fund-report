@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>晟孚资本 · 基金产品月报</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-base: #12151a; --bg-panel: #181c23; --bg-raised: #1f242d;
+      --border: #242a33; --border-strong: #303840;
+      --text-strong: #e6e8eb; --text: #a8b0bc; --text-muted: #848c98;
+      --brand: #f5a524; --brand-fg: #0a0d12; --brand-soft: rgba(245, 165, 36, 0.15);
+      --font-display: "Space Grotesk", "Inter", "Noto Sans SC", sans-serif;
+      --font-sans: "Inter", "Noto Sans SC", sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg-base); color: var(--text); font-family: var(--font-sans); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .landing { text-align: center; max-width: 640px; padding: 48px 24px; }
+    .brand { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 48px; }
+    .brand-icon { width: 48px; height: 48px; background: var(--brand); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--brand-fg); font-size: 24px; font-weight: 700; }
+    .brand-name { font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--brand); }
+    h1 { font-size: 32px; font-weight: 600; color: var(--text-strong); margin-bottom: 12px; }
+    .subtitle { font-size: 16px; color: var(--text-muted); margin-bottom: 48px; }
+    .products { display: flex; flex-direction: column; gap: 20px; }
+    .product-card {
+      display: block; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px;
+      padding: 32px; text-decoration: none; transition: all 0.25s ease; text-align: left;
+    }
+    .product-card:hover { border-color: var(--brand); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245, 165, 36, 0.1); }
+    .product-header { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+    .product-badge { padding: 4px 12px; background: var(--brand-soft); color: var(--brand); font-size: 11px; font-weight: 600; border-radius: 4px; letter-spacing: 0.05em; text-transform: uppercase; }
+    .product-name { font-size: 20px; font-weight: 600; color: var(--text-strong); margin-bottom: 8px; }
+    .product-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+    .product-meta { display: flex; gap: 24px; margin-top: 16px; font-size: 13px; color: var(--text-muted); }
+    .product-meta span { display: flex; align-items: center; gap: 6px; }
+    .meta-label { color: #848c98; }
+    .meta-value { color: var(--text-strong); font-weight: 500; }
+    .blur-val { filter: blur(6px); user-select: none; transition: filter 0.3s; }
+    .product-card:hover .blur-val { filter: blur(0); }
+    .compliance-tip { font-size: 11px; color: #5d6572; margin-top: 6px; }
+    .footer { margin-top: 48px; font-size: 13px; color: #5d6572; }
+    @media (max-width: 480px) {
+      h1 { font-size: 24px; } .product-card { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="landing">
+    <div class="brand">
+      <div class="brand-icon">晟</div>
+      <div class="brand-name">晟孚资本</div>
+    </div>
+    <h1>基金产品月报</h1>
+    <p class="subtitle">2026年7月 · 选择产品查看详细报告</p>
+    <div class="products">
+      <a href="./zhouqi/" class="product-card">
+        <div class="product-header">
+          <span class="product-badge">周期策略</span>
+        </div>
+        <div class="product-name">晟孚泽鑫周期私募证券投资基金</div>
+        <div class="product-desc">聚焦周期行业轮动机会，重点配置有色金属、化工、建材等顺周期板块，捕捉经济复苏带来的超额收益。</div>
+        <div class="product-meta">
+          <span><span class="meta-label">基金代码</span> <span class="meta-value">SFF2024001</span></span>
+          <span><span class="meta-label">基金经理</span> <span class="meta-value">王磊</span></span>
+          <span><span class="meta-label">月度收益</span> <span class="meta-value blur-val" style="color:#ef4d4d">+6.18%</span></span>
+        </div>
+      </a>
+      <a href="./jiazhi/" class="product-card">
+        <div class="product-header">
+          <span class="product-badge">周期策略</span>
+        </div>
+        <div class="product-name">晟孚泽鑫价值私募证券投资基金</div>
+        <div class="product-desc">聚焦大宗商品和稀缺资源领域，坚持低估值、集中投资、中长线持有，在高度不确定的市场中寻找确定性。</div>
+        <div class="product-meta">
+          <span><span class="meta-label">基金代码</span> <span class="meta-value">SFF2024002</span></span>
+          <span><span class="meta-label">基金经理</span> <span class="meta-value">刘备</span></span>
+          <span><span class="meta-label">月度收益</span> <span class="meta-value blur-val" style="color:#ef4d4d">+4.82%</span></span>
+        </div>
+      </a>
+    </div>
+    <p class="compliance-tip">* 业绩数据已脱敏处理，悬停可查看。详细业绩请登录合格投资者平台查阅。</p>
+    <div class="footer">
+      © 2026 晟孚资本 · SHENGFU CAPITAL · 基金管理人等级编号：P1010913<br>本报告仅面向合格投资者
+    </div>
+  </div>
+</body>
+</html>
