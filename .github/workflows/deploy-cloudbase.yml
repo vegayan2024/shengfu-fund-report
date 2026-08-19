@@ -1,0 +1,36 @@
+name: 部署到腾讯云 CloudBase
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '*.md'
+
+  # 支持手动触发
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 部署到 CloudBase 静态托管
+        uses: TencentCloudBase/cloudbase-action@v2
+        with:
+          secretId: ${{ secrets.TENCENT_SECRET_ID }}
+          secretKey: ${{ secrets.TENCENT_SECRET_KEY }}
+          envId: ${{ secrets.TENCENT_ENV_ID }}
+          staticSrcPath: ./
+          # 排除不需要的文件
+          exclude: |
+            .git/**
+            .github/**
+            scripts/**
+            data/**
+            *.md
+            *.py
+            *.xls
+            *.xlsx
