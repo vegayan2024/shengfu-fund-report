@@ -22,7 +22,7 @@
 
     /* 登录遮罩 */
     .login-overlay {
-      position: fixed; inset: 0; z-index: 1000;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 1000;
       background: var(--bg-base);
       display: flex; align-items: center; justify-content: center;
       transition: opacity 0.4s ease;
@@ -191,9 +191,13 @@
     let clients = {};
     try {
       const resp = await fetch('./clients.json');
+      if (!resp.ok) throw new Error(resp.status);
       clients = await resp.json();
     } catch (e) {
-      console.error('无法加载客户数据');
+      console.error('无法加载客户数据:', e);
+      loginError.textContent = '系统异常，请联系管理员';
+      document.getElementById('phoneInput').disabled = true;
+      document.getElementById('loginBtn').disabled = true;
     }
 
     // 检查已登录状态
