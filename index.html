@@ -18,7 +18,60 @@
       --font-sans: "Inter", "Noto Sans SC", sans-serif;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: var(--bg-base); color: var(--text); font-family: var(--font-sans); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+    body { background: var(--bg-base); color: var(--text); font-family: var(--font-sans); min-height: 100vh; }
+
+    /* 登录遮罩 */
+    .login-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: var(--bg-base);
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.4s ease;
+    }
+    .login-overlay.hidden { opacity: 0; pointer-events: none; }
+    .login-box {
+      background: var(--bg-panel); border: 1px solid var(--border); border-radius: 16px;
+      padding: 48px 40px; width: 380px; max-width: 90vw; text-align: center;
+    }
+    .login-box .brand { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 32px; }
+    .login-box .brand-icon { width: 48px; height: 48px; background: var(--brand); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--brand-fg); font-size: 24px; font-weight: 700; }
+    .login-box .brand-name { font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--brand); }
+    .login-box h2 { font-size: 18px; font-weight: 600; color: var(--text-strong); margin-bottom: 8px; }
+    .login-box .login-hint { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; }
+    .login-box input {
+      width: 100%; padding: 14px 16px; background: var(--bg-raised); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--text-strong); font-size: 20px; font-family: var(--font-display);
+      text-align: center; letter-spacing: 0.3em; outline: none; transition: border-color 0.2s;
+    }
+    .login-box input:focus { border-color: var(--brand); }
+    .login-box input::placeholder { letter-spacing: normal; font-size: 14px; color: var(--text-muted); }
+    .login-box .login-btn {
+      width: 100%; margin-top: 16px; padding: 14px; background: var(--brand); color: var(--brand-fg);
+      border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .login-box .login-btn:hover { opacity: 0.9; }
+    .login-box .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .login-error { font-size: 13px; color: #ef4d4d; margin-top: 12px; min-height: 20px; }
+
+    /* 欢迎横幅 */
+    .welcome-bar {
+      display: none; background: linear-gradient(135deg, rgba(245,165,36,0.08) 0%, rgba(245,165,36,0.02) 100%);
+      border-bottom: 1px solid var(--border); padding: 14px 24px;
+    }
+    .welcome-bar.show { display: flex; align-items: center; justify-content: space-between; }
+    .welcome-info { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text); }
+    .welcome-info .user-name { color: var(--brand); font-weight: 600; }
+    .welcome-info .user-product { color: var(--text-strong); font-weight: 500; }
+    .welcome-info .sep { color: var(--border-strong); margin: 0 4px; }
+    .logout-btn {
+      background: none; border: 1px solid var(--border); color: var(--text-muted);
+      padding: 6px 14px; border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.2s;
+    }
+    .logout-btn:hover { border-color: var(--brand); color: var(--brand); }
+
+    /* 主内容 */
+    .main-wrap { display: flex; flex-direction: column; min-height: 100vh; }
+    .main-content { flex: 1; display: flex; align-items: center; justify-content: center; }
     .landing { text-align: center; max-width: 640px; padding: 48px 24px; }
     .brand { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 48px; }
     .brand-icon { width: 48px; height: 48px; background: var(--brand); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: var(--brand-fg); font-size: 24px; font-weight: 700; }
@@ -45,10 +98,44 @@
     .footer { margin-top: 48px; font-size: 13px; color: #5d6572; }
     @media (max-width: 480px) {
       h1 { font-size: 24px; } .product-card { padding: 24px; }
+      .welcome-bar.show { flex-direction: column; gap: 8px; text-align: center; }
+      .login-box { padding: 32px 24px; }
     }
   </style>
 </head>
 <body>
+  <!-- 登录遮罩 -->
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+      <div class="brand">
+        <div class="brand-icon">晟</div>
+        <div class="brand-name">晟孚资本</div>
+      </div>
+      <h2>投资者身份验证</h2>
+      <p class="login-hint">请输入您登记手机号的后四位</p>
+      <input type="text" id="phoneInput" maxlength="4" pattern="\d{4}" inputmode="numeric" placeholder="手机号后四位" autocomplete="off">
+      <button class="login-btn" id="loginBtn" disabled>验证身份</button>
+      <div class="login-error" id="loginError"></div>
+    </div>
+  </div>
+
+  <!-- 欢迎横幅 -->
+  <div class="welcome-bar" id="welcomeBar">
+    <div class="welcome-info">
+      <span>欢迎，</span>
+      <span class="user-name" id="welcomeName"></span>
+      <span class="sep">|</span>
+      <span>持有产品：</span>
+      <span class="user-product" id="welcomeProduct"></span>
+      <span class="sep">|</span>
+      <span>购买日期：</span>
+      <span id="welcomeDate"></span>
+    </div>
+    <button class="logout-btn" id="logoutBtn">退出登录</button>
+  </div>
+
+  <!-- 主内容 -->
+  <div class="main-content">
   <div class="landing">
     <div class="brand">
       <div class="brand-icon">晟</div>
@@ -87,5 +174,81 @@
       © 2026 晟孚资本 · SHENGFU CAPITAL · 基金管理人等级编号：P1010913<br>本报告仅面向合格投资者
     </div>
   </div>
+  </div>
+
+  <script>
+  (async () => {
+    const overlay = document.getElementById('loginOverlay');
+    const phoneInput = document.getElementById('phoneInput');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginError = document.getElementById('loginError');
+    const welcomeBar = document.getElementById('welcomeBar');
+    const welcomeName = document.getElementById('welcomeName');
+    const welcomeProduct = document.getElementById('welcomeProduct');
+    const welcomeDate = document.getElementById('welcomeDate');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    let clients = {};
+    try {
+      const resp = await fetch('./clients.json');
+      clients = await resp.json();
+    } catch (e) {
+      console.error('无法加载客户数据');
+    }
+
+    // 检查已登录状态
+    const saved = sessionStorage.getItem('sf_client');
+    if (saved && clients[saved]) {
+      showWelcome(clients[saved]);
+      overlay.classList.add('hidden');
+    }
+
+    // 输入验证
+    phoneInput.addEventListener('input', () => {
+      phoneInput.value = phoneInput.value.replace(/\D/g, '');
+      loginBtn.disabled = phoneInput.value.length !== 4;
+    });
+
+    // 回车提交
+    phoneInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && phoneInput.value.length === 4) doLogin();
+    });
+
+    // 登录按钮
+    loginBtn.addEventListener('click', doLogin);
+
+    // 退出登录
+    logoutBtn.addEventListener('click', () => {
+      sessionStorage.removeItem('sf_client');
+      welcomeBar.classList.remove('show');
+      overlay.classList.remove('hidden');
+      phoneInput.value = '';
+      loginError.textContent = '';
+      loginBtn.disabled = true;
+    });
+
+    function doLogin() {
+      const code = phoneInput.value;
+      if (clients[code]) {
+        sessionStorage.setItem('sf_client', code);
+        showWelcome(clients[code]);
+        overlay.classList.add('hidden');
+        loginError.textContent = '';
+      } else {
+        loginError.textContent = '手机号未登记，请联系基金管理人';
+        phoneInput.value = '';
+        loginBtn.disabled = true;
+        phoneInput.focus();
+      }
+    }
+
+    function showWelcome(info) {
+      welcomeName.textContent = info.name;
+      welcomeProduct.textContent = info.product;
+      welcomeDate.textContent = info.date;
+      welcomeBar.classList.add('show');
+    }
+  })();
+  </script>
 </body>
 </html>
