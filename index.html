@@ -165,16 +165,16 @@
   <!-- 欢迎横幅 -->
   <div class="welcome-bar" id="welcomeBar">
     <div class="welcome-info">
-      <span>欢迎，</span>
+      <span>欢迎尊敬的</span>
       <span class="user-name" id="welcomeName"></span>
       <span class="sep">|</span>
       <span>持有产品：</span>
       <span class="user-product" id="welcomeProduct"></span>
-      <span class="sep">|</span>
-      <span>购买日期：</span>
-      <span id="welcomeDate"></span>
     </div>
-    <button class="logout-btn" id="logoutBtn">退出登录</button>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span style="font-size:12px;color:var(--text-muted);">若产品不符请退出并致电 40000000</span>
+      <button class="logout-btn" id="logoutBtn">退出登录</button>
+    </div>
   </div>
 
   <!-- 主内容 — 左右分栏 -->
@@ -232,7 +232,6 @@
     const welcomeBar = document.getElementById('welcomeBar');
     const welcomeName = document.getElementById('welcomeName');
     const welcomeProduct = document.getElementById('welcomeProduct');
-    const welcomeDate = document.getElementById('welcomeDate');
     const logoutBtn = document.getElementById('logoutBtn');
     const productsContainer = document.getElementById('productsContainer');
 
@@ -301,7 +300,6 @@
       // 显示所有购买的产品
       const productNames = info.products.map(p => p.name).join('、');
       welcomeProduct.textContent = productNames;
-      welcomeDate.textContent = info.date;
       welcomeBar.classList.add('show');
       // 过滤产品显示
       filterProducts(info.products);
