@@ -128,8 +128,7 @@
     .product-meta span { display: flex; align-items: center; gap: 5px; }
     .meta-label { color: var(--text-muted); }
     .meta-value { color: var(--text-strong); font-weight: 500; }
-    .blur-val { filter: blur(6px); user-select: none; transition: filter 0.25s ease; }
-    .product-card:hover .blur-val { filter: blur(0); }
+    .blur-val { filter: blur(6px); user-select: none; pointer-events: none; }
 
     @media (max-width: 768px) {
       .main-content { grid-template-columns: 1fr; }
@@ -195,22 +194,22 @@
       </div>
     </div>
     <div class="main-right">
-      <div class="products">
-        <a href="./zhouqi/" class="product-card">
+      <div class="products" id="productsContainer">
+        <a href="./zhouqi/" class="product-card" data-product="zhouqi">
           <div class="product-header">
             <span class="product-badge">周期策略</span>
           </div>
           <div class="product-name">晟孚泽鑫周期私募证券投资基金</div>
           <div class="product-desc">聚焦周期行业轮动机会，重点配置有色金属、化工、建材等顺周期板块，捕捉经济复苏带来的超额收益。</div>
           <div class="product-meta">
-            <span><span class="meta-label">基金代码</span> <span class="meta-value">SFF2024001</span></span>
+            <span><span class="meta-label">基金代码</span> <span class="meta-value">XY2338</span></span>
             <span><span class="meta-label">基金经理</span> <span class="meta-value">张璇</span></span>
             <span><span class="meta-label">月度收益</span> <span class="meta-value blur-val" style="color:var(--rise)">+6.18%</span></span>
           </div>
         </a>
-        <a href="./jiazhi/" class="product-card">
+        <a href="./jiazhi/" class="product-card" data-product="jiazhi">
           <div class="product-header">
-            <span class="product-badge">周期策略</span>
+            <span class="product-badge">价值策略</span>
           </div>
           <div class="product-name">晟孚泽鑫价值私募证券投资基金</div>
           <div class="product-desc">聚焦大宗商品和稀缺资源领域，坚持低估值、集中投资、中长线持有，在高度不确定的市场中寻找确定性。</div>
@@ -235,6 +234,7 @@
     const welcomeProduct = document.getElementById('welcomeProduct');
     const welcomeDate = document.getElementById('welcomeDate');
     const logoutBtn = document.getElementById('logoutBtn');
+    const productsContainer = document.getElementById('productsContainer');
 
     let clients = {};
     try {
@@ -277,6 +277,8 @@
       phoneInput.value = '';
       loginError.textContent = '';
       loginBtn.disabled = true;
+      // 显示所有产品
+      filterProducts(null);
     });
 
     function doLogin() {
@@ -296,9 +298,28 @@
 
     function showWelcome(info) {
       welcomeName.textContent = info.name;
-      welcomeProduct.textContent = info.product;
+      // 显示所有购买的产品
+      const productNames = info.products.map(p => p.name).join('、');
+      welcomeProduct.textContent = productNames;
       welcomeDate.textContent = info.date;
       welcomeBar.classList.add('show');
+      // 过滤产品显示
+      filterProducts(info.products);
+    }
+
+    function filterProducts(products) {
+      const allCards = productsContainer.querySelectorAll('.product-card');
+      if (!products) {
+        // 未登录，显示所有产品
+        allCards.forEach(card => card.style.display = '');
+      } else {
+        // 已登录，只显示客户购买的产品
+        const productCodes = products.map(p => p.code);
+        allCards.forEach(card => {
+          const cardProduct = card.getAttribute('data-product');
+          card.style.display = productCodes.includes(cardProduct) ? '' : 'none';
+        });
+      }
     }
   })();
   </script>

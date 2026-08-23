@@ -9,6 +9,33 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
   <style>
+    /* 产品选择导航栏 */
+    .product-nav {
+      display: none;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .product-nav.show { display: flex; align-items: center; gap: 12px; }
+    .product-nav-label { font-size: 13px; color: var(--text-muted); }
+    .product-nav-btns { display: flex; gap: 8px; }
+    .product-nav-btn {
+      padding: 6px 16px;
+      background: var(--bg-raised);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .product-nav-btn:hover { border-color: var(--border-strong); color: var(--text); }
+    .product-nav-btn.active { background: var(--brand-soft); border-color: var(--brand); color: var(--brand); }
+
     :root {
       color-scheme: dark;
       /* — surfaces (warm-tinted neutrals) — */
@@ -125,15 +152,59 @@
   </style>
 </head>
 <body>
+  <!-- 产品选择导航栏 -->
+  <div class="product-nav" id="productNav">
+    <span class="product-nav-label">切换产品：</span>
+    <div class="product-nav-btns" id="productNavBtns">
+      <!-- 动态生成 -->
+    </div>
+  </div>
+
   <div class="container" id="app">
     <div class="loading"><div class="loading-spinner"></div><div>加载月报数据...</div></div>
   </div>
 
   <script>
     // ============================================================
+    // 检查登录状态并显示产品导航
+    // ============================================================
+    async function checkLoginAndShowNav() {
+      try {
+        const resp = await fetch('../clients.json');
+        if (!resp.ok) return;
+        const clients = await resp.json();
+
+        const saved = sessionStorage.getItem('sf_client');
+        if (saved && clients[saved]) {
+          const client = clients[saved];
+          // 如果客户购买了多只产品，显示导航栏
+          if (client.products.length > 1) {
+            const productNav = document.getElementById('productNav');
+            const productNavBtns = document.getElementById('productNavBtns');
+            productNav.classList.add('show');
+
+            // 生成产品按钮
+            client.products.forEach(product => {
+              const btn = document.createElement('a');
+              btn.href = `../${product.code}/`;
+              btn.className = 'product-nav-btn' + (product.code === 'zhouqi' ? ' active' : '');
+              btn.textContent = product.name;
+              productNavBtns.appendChild(btn);
+            });
+          }
+        }
+      } catch (e) {
+        console.error('检查登录状态失败:', e);
+      }
+    }
+
+    // ============================================================
     // 加载真实数据
     // ============================================================
     async function init() {
+      // 先检查登录状态
+      await checkLoginAndShowNav();
+
       const resp = await fetch('./combined-data.json');
       const DATA = await resp.json();
       const app = document.getElementById('app');
