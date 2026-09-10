@@ -309,8 +309,8 @@
       </div>
       <div class="header-right">
         <div class="badge">MONTHLY REPORT</div>
-        <div class="period">2026年7月</div>
-        <div class="period-range">报告期：2026.07.01 - 2026.07.31</div>
+        <div class="period">2026年9月</div>
+        <div class="period-range">净值日期：2026.09.08（2026.05.26 - 2026.09.08）</div>
       </div>
     </header>
 
@@ -318,10 +318,10 @@
     <section class="section">
       <div class="section-hd"><h2 class="section-title">基金概况</h2></div>
       <div class="metrics">
-        <div class="metric anim"><span class="metric-label">累计净值</span><span class="metric-val rise">1.2158</span><span class="metric-note">▲ 3.15%</span></div>
-        <div class="metric anim"><span class="metric-label">月度收益</span><span class="metric-val rise">+4.82%</span><span class="metric-note">同期基准 +2.35%</span></div>
-        <div class="metric anim"><span class="metric-label">基金规模</span><span class="metric-val">4.2<span class="metric-unit"> 亿</span></span><span class="metric-note">较上月 +0.2亿</span></div>
-        <div class="metric anim"><span class="metric-label">成立以来</span><span class="metric-val rise">+21.6%</span><span class="metric-note">年化 10.8%</span></div>
+        <div class="metric anim"><span class="metric-label">累计净值</span><span class="metric-val rise">0.9440</span><span class="metric-note">▲ 5.12% 近1月</span></div>
+        <div class="metric anim"><span class="metric-label">月度收益</span><span class="metric-val rise">+5.12%</span><span class="metric-note">同期基准 -3.04%</span></div>
+        <div class="metric anim"><span class="metric-label">基金规模</span><span class="metric-val">1.02<span class="metric-unit"> 亿</span></span><span class="metric-note">总份额 1.08亿份</span></div>
+        <div class="metric anim"><span class="metric-label">成立以来</span><span class="metric-val rise">+3.74%</span><span class="metric-note">同期基准 -7.86%</span></div>
       </div>
     </section>
 
@@ -431,9 +431,9 @@
     <section class="section">
       <div class="section-hd"><h2 class="section-title">风险指标</h2></div>
       <div class="risk-grid">
-        <div class="risk-item"><span class="risk-label">年化波动率</span><span class="risk-val">14.8%</span></div>
-        <div class="risk-item"><span class="risk-label">最大回撤</span><span class="risk-val">-8.6%</span></div>
-        <div class="risk-item"><span class="risk-label">夏普比率</span><span class="risk-val">1.52</span></div>
+        <div class="risk-item"><span class="risk-label">年化波动率</span><span class="risk-val">38.8%</span></div>
+        <div class="risk-item"><span class="risk-label">最大回撤</span><span class="risk-val">-19.2%</span></div>
+        <div class="risk-item"><span class="risk-label">夏普比率</span><span class="risk-val">0.29</span></div>
       </div>
       <div class="disclaimer">
         <div class="disclaimer-hd">免责声明</div>
@@ -444,7 +444,7 @@
     <footer class="footer">
       <div class="footer-brand">晟孚资本 · SHENGFU CAPITAL</div>
       <div class="footer-meta">
-        <div>报告生成日期：2026年8月5日</div>
+        <div>报告生成日期：2026年9月8日</div>
         <div>客服热线：400-666-8888 · www.shengfucapital.com</div>
       </div>
     </footer>
@@ -637,60 +637,89 @@
       renderNavChart();
     });
 
-    const returnChart = echarts.init(document.getElementById('returnChart'));
-    returnChart.setOption({
-      tooltip: { trigger: 'axis', ...tp },
-      legend: { data: ['本基金', '沪深300'], right: 0, top: 0, textStyle: { color: C.textMuted, fontSize: 11 }, itemWidth: 16, itemHeight: 2 },
-      grid: { left: 50, right: 20, top: 40, bottom: 30 },
-      xAxis: { type: 'category', data: ['近1月', '近3月', '近6月', '近1年', '成立以来'], ...ax },
-      yAxis: { type: 'value', ...ax, axisLabel: { ...ax.axisLabel, formatter: '{value}%' } },
-      series: [
-        { name: '本基金', type: 'bar', data: [4.82, 9.8, 15.2, 22.5, 21.6], barWidth: 20, itemStyle: { color: C.brand, borderRadius: [3,3,0,0] } },
-        { name: '沪深300', type: 'bar', data: [2.35, 6.8, 11.2, 18.5, 26.3], barWidth: 20, itemStyle: { color: C.info, borderRadius: [3,3,0,0] } },
-      ],
-    });
+          // 收益对比图（动态计算各区间收益）
+      const returnChart = echarts.init(document.getElementById('returnChart'));
+      const retPeriods = ['近1周', '近1月', '近3月', '成立以来'];
+      const retIdx = [
+        Math.max(0, DATA.nav.length - 6),
+        Math.max(0, DATA.nav.length - 22),
+        Math.max(0, DATA.nav.length - 66),
+        0
+      ];
+      const fundRets = retIdx.map(i => ((latestNav / DATA.nav[i] - 1) * 100).toFixed(2));
+      const benchRets = retIdx.map(i => ((latestBench / DATA.benchmark[i] - 1) * 100).toFixed(2));
 
-    const monthlyChart = echarts.init(document.getElementById('monthlyChart'));
-    const monthlyData = [
-      { m: '08', v: 1.25 }, { m: '09', v: -0.32 }, { m: '10', v: 2.18 }, { m: '11', v: 1.65 },
-      { m: '12', v: -0.85 }, { m: '01', v: 2.12 }, { m: '02', v: 2.45 }, { m: '03', v: -1.15 },
-      { m: '04', v: 2.85 }, { m: '05', v: 1.22 }, { m: '06', v: 1.88 }, { m: '07', v: 4.82 },
-    ];
-    monthlyChart.setOption({
-      tooltip: { trigger: 'axis', ...tp, formatter: p => `${p[0].name}月<br/>收益：<b style="color:${p[0].value >= 0 ? C.rise : C.fall}">${p[0].value >= 0 ? '+' : ''}${p[0].value}%</b>` },
-      grid: { left: 50, right: 20, top: 20, bottom: 30 },
-      xAxis: { type: 'category', data: monthlyData.map(d => d.m), ...ax },
-      yAxis: { type: 'value', ...ax, axisLabel: { ...ax.axisLabel, formatter: '{value}%' } },
-      series: [{ type: 'bar', data: monthlyData.map(d => d.v), barWidth: 18, itemStyle: { borderRadius: [3,3,0,0], color: p => p.value >= 0 ? C.rise : C.fall } }],
-    });
+      returnChart.setOption({
+        tooltip: { trigger: 'axis', ...tp, formatter: p => `${p[0].name}<br/>本基金：<b style="color:${C.brand}">${p[0].value}%</b><br/>沪深300：<b style="color:${C.info}">${p[1].value}%</b>` },
+        legend: { data: ['本基金', '沪深300'], right: 0, top: 0, textStyle: { color: C.textMuted, fontSize: 11 }, itemWidth: 16, itemHeight: 2 },
+        grid: { left: 56, right: 20, top: 40, bottom: 30 },
+        xAxis: { type: 'category', data: retPeriods, ...ax },
+        yAxis: { type: 'value', ...ax, axisLabel: { ...ax.axisLabel, formatter: '{value}%' } },
+        series: [
+          { name: '本基金', type: 'bar', data: fundRets, barWidth: 20, itemStyle: { color: C.brand, borderRadius: [3, 3, 0, 0] } },
+          { name: '沪深300', type: 'bar', data: benchRets, barWidth: 20, itemStyle: { color: C.info, borderRadius: [3, 3, 0, 0] } },
+        ],
+      });
 
-    // ============================================================
-    // 专业机构 22 项量化指标定义与渲染（严格遵照图片中数据名称）
-    // ============================================================
-    const INST_METRICS = [
-      { name: '绝对回报', tip: '统计区间内基金累计净值的累计涨跌幅', val: '21.58%', type: 'rise' },
-      { name: '相对回报', tip: null, val: '-4.67%', type: 'fall' },
-      { name: '相对回报(几何)', tip: '(1 + 基金累计收益) / (1 + 基准累计收益) - 1，衡量相对基准的几何超额收益', val: '-3.70%', type: 'fall' },
-      { name: '本周回报', tip: null, val: '1.15%', type: 'rise' },
-      { name: '本月回报', tip: null, val: '4.82%', type: 'rise' },
-      { name: '本季回报', tip: null, val: '8.30%', type: 'rise' },
-      { name: '本年回报', tip: null, val: '15.42%', type: 'rise' },
-      { name: '年化收益率', tip: null, val: '10.80%', type: 'rise' },
-      { name: '年化波动率', tip: null, val: '14.80%', type: 'neutral' },
-      { name: 'Sharpe', tip: '夏普比率，衡量承担每单位总风险所获得的超额报酬', val: '1.52', type: 'rise' },
-      { name: 'Alpha', tip: '詹森阿尔法 (Jensen\'s Alpha)，超额选股收益能力', val: '8.65%', type: 'rise' },
-      { name: 'Beta', tip: '贝塔系数，相对于基准市场的系统性敏感度', val: '0.62', type: 'neutral' },
-      { name: '跟踪误差', tip: '相对基准超额收益的标准差，衡量跟踪偏离的稳定性', val: '2.10%', type: 'neutral' },
-      { name: '年化跟踪误差', tip: null, val: '12.35%', type: 'neutral' },
-      { name: '信息比率', tip: 'Information Ratio，超额收益与跟踪误差之比，衡量主动管理能力', val: '0.45', type: 'rise' },
-      { name: '最大回撤', tip: null, val: '-8.60%', type: 'fall' },
-      { name: '日胜率', tip: null, val: '54.20%', type: 'rise' },
-      { name: '周胜率', tip: null, val: '58.60%', type: 'rise' },
-      { name: '月胜率', tip: null, val: '66.70%', type: 'rise' },
-      { name: 'Calmar', tip: '卡玛比率，年化收益率与历史最大回撤之比', val: '1.26', type: 'rise' },
-      { name: '换手率', tip: '报告期内股票买卖总量占资产净值的周转频率', val: '142.50%', type: 'neutral' },
-      { name: '平均持仓天数', tip: '投资组合中持仓股票的加权平均持有天数', val: '480.25', type: 'neutral' },
-    ];
+      // 月度收益（按自然月分组）
+      const monthlyChart = echarts.init(document.getElementById('monthlyChart'));
+      const monthReturns = [];
+      const monthLabels = [];
+      let prevMonthEnd = null;
+
+      for (let i = 0; i < DATA.dates.length; i++) {
+        const curMonth = DATA.dates[i].slice(0, 7);
+        const nextMonth = i < DATA.dates.length - 1 ? DATA.dates[i + 1].slice(0, 7) : null;
+        if (curMonth !== nextMonth) {
+          if (prevMonthEnd !== null) {
+            const ret = ((DATA.nav[i] / prevMonthEnd - 1) * 100);
+            monthReturns.push(ret.toFixed(2));
+            monthLabels.push(curMonth.slice(5) + '月');
+          }
+          prevMonthEnd = DATA.nav[i];
+        }
+      }
+      if (prevMonthEnd !== null && DATA.dates[DATA.dates.length - 1].slice(0, 7) === '2026-09') {
+        const ret = ((DATA.nav[DATA.nav.length - 1] / prevMonthEnd - 1) * 100);
+        monthReturns.push(ret.toFixed(2));
+        monthLabels.push('09月');
+      }
+
+      monthlyChart.setOption({
+        tooltip: { trigger: 'axis', ...tp, formatter: p => `${p[0].name}<br/>收益：<b style="color:${p[0].value >= 0 ? C.rise : C.fall}">${p[0].value >= 0 ? '+' : ''}${p[0].value}%</b>` },
+        grid: { left: 56, right: 20, top: 20, bottom: 30 },
+        xAxis: { type: 'category', data: monthLabels, ...ax },
+        yAxis: { type: 'value', ...ax, axisLabel: { ...ax.axisLabel, formatter: '{value}%' } },
+        series: [{ type: 'bar', data: monthReturns.map(Number), barWidth: 24, itemStyle: { borderRadius: [3, 3, 0, 0], color: p => p.value >= 0 ? C.rise : C.fall } }],
+      });
+
+      // ============================================================
+      // 专业机构 22 项量化指标定义与渲染（严格遵照图片中数据名称）
+      // ============================================================
+      const INST_METRICS = [
+        { name: '绝对回报', tip: '统计区间内基金累计净值的累计涨跌幅', val: '3.74%', type: 'rise' },
+        { name: '相对回报', tip: null, val: '11.60%', type: 'rise' },
+        { name: '相对回报(几何)', tip: '(1 + 基金累计收益) / (1 + 基准累计收益) - 1，衡量相对基准的几何超额收益', val: '12.59%', type: 'rise' },
+        { name: '本周回报', tip: null, val: '5.47%', type: 'rise' },
+        { name: '本月回报', tip: null, val: '5.12%', type: 'rise' },
+        { name: '本季回报', tip: null, val: '10.02%', type: 'rise' },
+        { name: '本年回报', tip: null, val: '3.74%', type: 'rise' },
+        { name: '年化收益率', tip: null, val: '13.12%', type: 'rise' },
+        { name: '年化波动率', tip: null, val: '38.75%', type: 'neutral' },
+        { name: 'Sharpe', tip: '夏普比率，衡量承担每单位总风险所获得的超额报酬', val: '0.29', type: 'rise' },
+        { name: 'Alpha', tip: '詹森阿尔法 (Jensen\'s Alpha)，超额选股收益能力', val: '25.93%', type: 'rise' },
+        { name: 'Beta', tip: '贝塔系数，相对于基准市场的系统性敏感度', val: '0.57', type: 'neutral' },
+        { name: '跟踪误差', tip: '相对基准超额收益的标准差，衡量跟踪偏离的稳定性', val: '2.38%', type: 'neutral' },
+        { name: '年化跟踪误差', tip: null, val: '37.84%', type: 'neutral' },
+        { name: '信息比率', tip: 'Information Ratio，超额收益与跟踪误差之比，衡量主动管理能力', val: '0.98', type: 'rise' },
+        { name: '最大回撤', tip: null, val: '-19.16%', type: 'fall' },
+        { name: '日胜率', tip: null, val: '51.35%', type: 'rise' },
+        { name: '周胜率', tip: null, val: '58.33%', type: 'rise' },
+        { name: '月胜率', tip: null, val: '66.67%', type: 'rise' },
+        { name: 'Calmar', tip: '卡玛比率，年化收益率与历史最大回撤之比', val: '0.68', type: 'rise' },
+        { name: '换手率', tip: '报告期内股票买卖总量占资产净值的周转频率', val: '142.50%', type: 'neutral' },
+        { name: '平均持仓天数', tip: '投资组合中持仓股票的加权平均持有天数', val: '75.00', type: 'neutral' },
+      ];
 
     function renderInstMetrics() {
       const listEl = document.getElementById('instMetricsList');
