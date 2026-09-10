@@ -2,7 +2,7 @@
 <html lang="zh-CN" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>晟孚资本 · 基金产品月报</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -136,19 +136,35 @@
     .meta-value { color: var(--text-strong); font-weight: 500; }
     .blur-val { filter: blur(6px); user-select: none; pointer-events: none; }
 
+    /* 移动端触控微交互 */
+    .login-btn:active, .product-card:active, .login-tab-btn:active, .logout-btn:active {
+      transform: scale(0.985);
+      transition: transform 0.1s ease;
+    }
+
     @media (max-width: 768px) {
       .main-content { grid-template-columns: 1fr; }
-      .main-left { padding: 48px 24px 32px; }
-      .main-right { padding: 32px 24px 48px; border-left: none; border-top: 1px solid var(--border); }
-      .login-overlay { justify-content: center; padding-left: 0; }
-      h1 { font-size: 28px; }
+      .main-left { padding: 40px 20px 24px; }
+      .main-right { padding: 24px 20px 48px; border-left: none; border-top: 1px solid var(--border); }
+      .login-overlay { justify-content: center; padding: 16px; padding-bottom: max(16px, env(safe-area-inset-bottom)); }
+      .login-box { width: 100%; max-width: 380px; }
+      h1 { font-size: clamp(24px, 7vw, 32px); }
+      .brand { margin-bottom: 24px; }
     }
     @media (max-width: 480px) {
-      .main-left, .main-right { padding: 32px 16px; }
-      .product-card { padding: 20px; }
-      .product-meta { flex-wrap: wrap; gap: 12px; }
+      .main-left, .main-right { padding: 28px 16px; }
+      .main-right { padding-bottom: max(32px, env(safe-area-inset-bottom)); }
+      .product-card { padding: 18px 16px; }
+      .product-name { font-size: 16px; }
+      .product-desc { font-size: 12.5px; }
+      .product-meta { flex-wrap: wrap; gap: 10px; font-size: 11.5px; }
+      .welcome-bar { padding: 10px 14px; }
       .welcome-bar.show { flex-direction: column; gap: 8px; text-align: center; }
-      .login-box { padding: 28px 20px; }
+      .welcome-info { flex-wrap: wrap; justify-content: center; gap: 4px 6px; font-size: 12px; }
+      .login-box { padding: 24px 18px; border-radius: 10px; }
+      .login-box input { font-size: 18px; padding: 10px 12px; }
+      .login-tab-btn { padding: 10px 0; font-size: 13.5px; }
+      .login-btn { min-height: 44px; font-size: 15px; }
     }
   </style>
 </head>
@@ -167,7 +183,7 @@
       </div>
       <div id="personalPane">
         <p class="login-hint">请输入您登记手机号的后四位</p>
-        <input type="text" id="phoneInput" maxlength="10" placeholder="手机号后四位" autocomplete="off">
+        <input type="text" id="phoneInput" maxlength="10" placeholder="手机号后四位" autocomplete="off" inputmode="numeric" pattern="[0-9]*">
         <button class="login-btn" id="loginBtn" disabled>验证身份</button>
       </div>
       <div id="instPane" style="display:none;">

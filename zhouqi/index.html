@@ -2,7 +2,7 @@
 <html lang="zh-CN" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>晟孚泽鑫周期私募证券投资基金 · 月报</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,6 +35,15 @@
     }
     .product-nav-btn:hover { border-color: var(--border-strong); color: var(--text); }
     .product-nav-btn.active { background: var(--brand-soft); border-color: var(--brand); color: var(--brand); }
+    .product-nav-btn:active, .period-tab:active, .inst-icon-btn:active { transform: scale(0.96); transition: transform 0.1s; }
+
+    @media (max-width: 768px) {
+      .product-nav { padding: 8px 12px; }
+      .product-nav.show { flex-wrap: wrap; gap: 8px; justify-content: space-between; }
+      .product-nav-btns { display: flex; gap: 6px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+      .product-nav-btns::-webkit-scrollbar { display: none; }
+      .product-nav-btn { padding: 4px 10px; font-size: 12px; white-space: nowrap; flex-shrink: 0; }
+    }
 
     :root {
       color-scheme: dark;
@@ -76,8 +85,8 @@
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: var(--bg-base); color: var(--text); font-family: var(--font-sans); font-size: var(--fs-body); line-height: var(--lh-normal); -webkit-font-smoothing: antialiased; min-height: 100vh; font-variant-numeric: tabular-nums; }
-    .container { max-width: 960px; margin: 0 auto; padding: var(--space-7) var(--space-6); }
-    @media (max-width: 768px) { .container { padding: var(--space-5) var(--space-4); } }
+    .container { max-width: 960px; margin: 0 auto; padding: var(--space-7) var(--space-6); padding-bottom: max(var(--space-7), env(safe-area-inset-bottom)); }
+    @media (max-width: 768px) { .container { padding: var(--space-4) 12px; padding-bottom: max(var(--space-6), env(safe-area-inset-bottom)); } }
 
     .header { display: flex; align-items: flex-start; justify-content: space-between; padding-bottom: var(--space-7); border-bottom: 1px solid var(--border); margin-bottom: var(--space-7); }
     .header-left { display: flex; flex-direction: column; gap: var(--space-3); }
@@ -97,8 +106,18 @@
     .section-title { font-size: var(--fs-h3); font-weight: var(--fw-semibold); color: var(--text-strong); }
 
     .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-5); }
-    @media (max-width: 768px) { .metrics { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 480px) { .metrics { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) {
+      .metrics { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .metric { padding: 12px 14px; }
+      .metric-val { font-size: clamp(20px, 5.5vw, 26px); }
+    }
+    @media (max-width: 480px) {
+      .metrics { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+      .metric { padding: 10px 10px; }
+      .metric-label { font-size: 10px; }
+      .metric-val { font-size: 19px; }
+      .metric-note { font-size: 10px; }
+    }
     .metric { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-4); padding: var(--space-5); display: flex; flex-direction: column; gap: 4px; transition: border-color 0.2s; }
     .metric:hover { border-color: var(--border-strong); }
     .metric-label { font-size: var(--fs-xs); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; font-weight: var(--fw-medium); }
@@ -108,6 +127,16 @@
 
     .chart-box { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-4); padding: var(--space-6); margin-bottom: var(--space-5); }
     .chart-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-5); flex-wrap: wrap; gap: var(--space-3); }
+    @media (max-width: 768px) {
+      .chart-box { padding: 14px 10px; margin-bottom: 12px; }
+      .chart-hd { flex-direction: column; align-items: stretch; gap: 10px; margin-bottom: 12px; }
+      .chart-title { font-size: 14.5px; }
+      .chart-controls { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+      .period-tabs { display: flex; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; gap: 4px; padding-bottom: 2px; }
+      .period-tabs::-webkit-scrollbar { display: none; }
+      .period-tab { flex: 1; min-width: fit-content; text-align: center; padding: 5px 8px; font-size: 11.5px; white-space: nowrap; }
+      .chart-wrap { height: 270px; }
+    }
     .chart-title { font-size: var(--fs-lead); font-weight: var(--fw-semibold); color: var(--text-strong); }
     .chart-wrap { width: 100%; height: 480px; }
     
@@ -195,7 +224,8 @@
       cursor: help; position: relative; border-radius: 50%;
     }
     .info-tip:hover { color: var(--brand); }
-    .info-tip:hover::after {
+    .info-tip:hover::after,
+    .info-tip.active::after {
       content: attr(data-tip); position: absolute; right: 0; bottom: 125%;
       background: #101317; color: #e6e8eb; padding: 6px 10px; border-radius: 4px;
       font-size: 11px; font-weight: 400; line-height: 1.4; white-space: normal;
@@ -224,12 +254,19 @@
     .inst-unlock-btn:hover { opacity: 0.9; }
 
     @media (max-width: 900px) {
-      .chart-and-inst-grid { flex-direction: column; }
-      .inst-panel-col { width: 100%; }
+      .chart-and-inst-grid { flex-direction: column; gap: 12px; }
+      .inst-panel-col { width: 100%; padding: 12px 10px; }
       .inst-panel-col.collapsed { display: none; }
-      .chart-wrap { height: 320px; }
     }
-    @media (max-width: 768px) { .chart-wrap { height: 280px; } }
+    @media (max-width: 768px) {
+      .inst-metrics-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 8px; max-height: none; padding-right: 0; }
+      .inst-metric-row { padding: 5px 8px; background: var(--bg-panel); border: 1px solid var(--border); border-radius: 4px; font-size: 11.5px; }
+      .inst-toolbar-left { font-size: 10.5px; gap: 4px; }
+    }
+    @media (max-width: 480px) {
+      .inst-metrics-list { grid-template-columns: 1fr; gap: 4px; }
+      .chart-wrap { height: 260px; }
+    }
 
     .period-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
     .period-tab { padding: 6px 14px; background: var(--bg-raised); border: 1px solid var(--border); border-radius: var(--radius-3); font-size: var(--fs-sm); font-weight: var(--fw-medium); color: var(--text-muted); cursor: pointer; transition: all 0.2s; user-select: none; }
@@ -665,7 +702,7 @@
               }
             },
             legend: { data: ['本基金', '沪深300'], right: 0, top: 0, textStyle: { color: C.textMuted, fontSize: 11 }, itemWidth: 16, itemHeight: 2 },
-            grid: { left: 56, right: 20, top: 40, bottom: 30 },
+            grid: (window.innerWidth <= 768 ? { left: 38, right: 16, top: 34, bottom: 22 } : { left: 56, right: 20, top: 40, bottom: 30 }),
             xAxis: { type: 'category', data: data.dates, ...ax, boundaryGap: false },
             yAxis: { type: 'value', ...ax, min: navMin.toFixed(2) },
             series: [
@@ -711,7 +748,7 @@
               }
             },
             legend: { data: ['本基金', '沪深300'], right: 0, top: 0, textStyle: { color: C.textMuted, fontSize: 11 }, itemWidth: 16, itemHeight: 2 },
-            grid: { left: 56, right: 80, top: 40, bottom: 30 },
+            grid: (window.innerWidth <= 768 ? { left: 38, right: 46, top: 34, bottom: 22 } : { left: 56, right: 80, top: 40, bottom: 30 }),
             xAxis: { type: 'category', data: data.dates, ...ax, boundaryGap: false },
             yAxis: { type: 'value', ...ax, min: navMin.toFixed(4) },
             series: [
@@ -789,7 +826,7 @@
       returnChart.setOption({
         tooltip: { trigger: 'axis', ...tp, formatter: p => `${p[0].name}<br/>本基金：<b style="color:${C.brand}">${p[0].value}%</b><br/>沪深300：<b style="color:${C.info}">${p[1].value}%</b>` },
         legend: { data: ['本基金', '沪深300'], right: 0, top: 0, textStyle: { color: C.textMuted, fontSize: 11 }, itemWidth: 16, itemHeight: 2 },
-        grid: { left: 56, right: 20, top: 40, bottom: 30 },
+        grid: (window.innerWidth <= 768 ? { left: 38, right: 16, top: 34, bottom: 22 } : { left: 56, right: 20, top: 40, bottom: 30 }),
         xAxis: { type: 'category', data: retPeriods, ...ax },
         yAxis: { type: 'value', ...ax, axisLabel: { ...ax.axisLabel, formatter: '{value}%' } },
         series: [
@@ -824,10 +861,10 @@
 
       monthlyChart.setOption({
         tooltip: { trigger: 'axis', ...tp, formatter: p => `${p[0].name}月<br/>收益：<b style="color:${p[0].value >= 0 ? C.rise : C.fall}">${p[0].value >= 0 ? '+' : ''}${p[0].value}%</b>` },
-        grid: { left: 56, right: 20, top: 20, bottom: 30 },
+        grid: (window.innerWidth <= 768 ? { left: 38, right: 14, top: 20, bottom: 24 } : { left: 56, right: 20, top: 20, bottom: 30 }),
         xAxis: { type: 'category', data: last12Labels, ...ax },
         yAxis: { type: 'value', ...ax, axisLabel: { ...ax.axisLabel, formatter: '{value}%' } },
-        series: [{ type: 'bar', data: last12Returns, barWidth: 18, itemStyle: { borderRadius: [3, 3, 0, 0], color: p => p.value >= 0 ? C.rise : C.fall } }],
+        series: [{ type: 'bar', data: last12Returns, barWidth: (window.innerWidth <= 768 ? 12 : 18), itemStyle: { borderRadius: [3, 3, 0, 0], color: p => p.value >= 0 ? C.rise : C.fall } }],
       });
 
       // ============================================================
@@ -933,7 +970,20 @@
         });
       }
 
-      window.addEventListener('resize', () => { navChart.resize(); returnChart.resize(); monthlyChart.resize(); });
+      window.addEventListener('resize', () => { renderNavChart(); navChart.resize(); returnChart.resize(); monthlyChart.resize(); });
+
+      // 移动端轻触提示支持
+      document.addEventListener('click', e => {
+        const tip = e.target.closest('.info-tip');
+        if (tip) {
+          e.stopPropagation();
+          const isActive = tip.classList.contains('active');
+          document.querySelectorAll('.info-tip.active').forEach(t => t.classList.remove('active'));
+          if (!isActive) tip.classList.add('active');
+        } else {
+          document.querySelectorAll('.info-tip.active').forEach(t => t.classList.remove('active'));
+        }
+      });
     }
 
     init();
