@@ -2,30 +2,61 @@
   "9554": {
     "name": "牛来",
     "products": [
-      {"name": "晟孚泽鑫周期私募证券投资基金", "code": "zhouqi"},
-      {"name": "晟孚泽鑫价值私募证券投资基金", "code": "jiazhi"}
+      {
+        "name": "晟孚泽鑫周期私募证券投资基金",
+        "code": "zhouqi"
+      },
+      {
+        "name": "晟孚泽鑫价值私募证券投资基金",
+        "code": "jiazhi"
+      }
     ],
     "date": "2025.10.1"
   },
   "5263": {
     "name": "大灰狼",
     "products": [
-      {"name": "晟孚泽鑫周期私募证券投资基金", "code": "zhouqi"}
+      {
+        "name": "晟孚泽鑫周期私募证券投资基金",
+        "code": "zhouqi"
+      }
     ],
     "date": "2025.10.2"
   },
   "4879": {
     "name": "小土狗",
     "products": [
-      {"name": "晟孚泽鑫价值私募证券投资基金", "code": "jiazhi"}
+      {
+        "name": "晟孚泽鑫价值私募证券投资基金",
+        "code": "jiazhi"
+      }
     ],
     "date": "2025.10.3"
   },
   "7854": {
     "name": "熊去",
     "products": [
-      {"name": "晟孚泽鑫价值私募证券投资基金", "code": "jiazhi"}
+      {
+        "name": "晟孚泽鑫价值私募证券投资基金",
+        "code": "jiazhi"
+      }
     ],
     "date": "2025.10.4"
+  },
+  "admin": {
+    "name": "专业机构",
+    "password": "admin",
+    "role": "institution",
+    "products": [
+      {
+        "name": "晟孚泽鑫周期私募证券投资基金",
+        "code": "zhouqi"
+      },
+      {
+        "name": "晟孚泽鑫价值私募证券投资基金",
+        "code": "jiazhi"
+      }
+    ],
+    "date": "2026.09.10"
   }
 }

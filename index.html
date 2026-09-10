@@ -60,6 +60,12 @@
     .login-box .brand-name { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--brand); }
     .login-box h2 { font-size: 17px; font-weight: 600; color: var(--text-strong); margin-bottom: 6px; }
     .login-box .login-hint { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+    .login-tabs { display: flex; gap: 8px; margin-bottom: 18px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+    .login-tab-btn { flex: 1; padding: 8px 0; background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--text-muted); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+    .login-tab-btn.active { color: var(--brand); border-bottom-color: var(--brand); }
+    .inst-input { letter-spacing: normal !important; font-size: 14px !important; text-align: left !important; font-family: var(--font-sans) !important; padding: 10px 12px !important; }
+    .inst-badge { display: inline-flex; align-items: center; padding: 2px 8px; background: var(--accent-soft); color: var(--accent); font-size: 11px; font-weight: 600; border-radius: 3px; margin-left: 6px; }
+    .inst-card-tag { display: none; align-items: center; gap: 6px; margin-top: 10px; padding: 6px 10px; background: rgba(61,169,252,0.08); border: 1px solid rgba(61,169,252,0.25); border-radius: 4px; font-size: 12px; color: var(--accent); }
     .login-box input {
       width: 100%; padding: 12px 14px; background: var(--bg-raised); border: 1px solid var(--border);
       border-radius: 6px; color: var(--text-strong); font-size: 20px; font-family: var(--font-display);
@@ -155,9 +161,21 @@
         <div class="brand-name">晟孚资本</div>
       </div>
       <h2>投资者身份验证</h2>
-      <p class="login-hint">请输入您登记手机号的后四位</p>
-      <input type="text" id="phoneInput" maxlength="4" pattern="\d{4}" inputmode="numeric" placeholder="手机号后四位" autocomplete="off">
-      <button class="login-btn" id="loginBtn" disabled>验证身份</button>
+      <div class="login-tabs">
+        <button type="button" class="login-tab-btn active" id="tabPersonal">个人投资者</button>
+        <button type="button" class="login-tab-btn" id="tabInst">专业机构</button>
+      </div>
+      <div id="personalPane">
+        <p class="login-hint">请输入您登记手机号的后四位</p>
+        <input type="text" id="phoneInput" maxlength="4" pattern="\d{4}" inputmode="numeric" placeholder="手机号后四位" autocomplete="off">
+        <button class="login-btn" id="loginBtn" disabled>验证身份</button>
+      </div>
+      <div id="instPane" style="display:none;">
+        <p class="login-hint">请输入专业机构账号与密码</p>
+        <input type="text" id="instUserInput" class="inst-input" placeholder="用户名（专业机构）" value="专业机构" autocomplete="off" style="margin-bottom:12px;">
+        <input type="password" id="instPassInput" class="inst-input" placeholder="机构密码（admin）" autocomplete="off">
+        <button class="login-btn" id="instLoginBtn">机构登录</button>
+      </div>
       <div class="login-error" id="loginError"></div>
     </div>
   </div>
@@ -167,6 +185,7 @@
     <div class="welcome-info">
       <span>欢迎尊敬的</span>
       <span class="user-name" id="welcomeName"></span>
+      <span class="inst-badge" id="welcomeInstBadge" style="display:none;">🏛️ 专业机构认证</span>
       <span class="sep">|</span>
       <span>持有产品：</span>
       <span class="user-product" id="welcomeProduct"></span>
@@ -206,6 +225,7 @@
             <span><span class="meta-label">基金经理</span> <span class="meta-value">张璇</span></span>
             <span><span class="meta-label">月度收益</span> <span class="meta-value blur-val" style="color:var(--rise)">+6.18%</span></span>
           </div>
+          <div class="inst-card-tag" id="zhouqiInstTag">⭐ 专业机构视角：已解锁全量 22 项深度量化指标</div>
         </a>
         <a href="./jiazhi/" class="product-card" data-product="jiazhi">
           <div class="product-header">
@@ -218,6 +238,7 @@
             <span><span class="meta-label">基金经理</span> <span class="meta-value">刘备</span></span>
             <span><span class="meta-label">月度收益</span> <span class="meta-value blur-val" style="color:var(--rise)">+4.82%</span></span>
           </div>
+          <div class="inst-card-tag" id="jiazhiInstTag">⭐ 专业机构视角：已解锁全量 22 项深度量化指标</div>
         </a>
       </div>
     </div>
@@ -280,10 +301,74 @@
       filterProducts(null);
     });
 
+    // 选项卡切换
+    const tabPersonal = document.getElementById('tabPersonal');
+    const tabInst = document.getElementById('tabInst');
+    const personalPane = document.getElementById('personalPane');
+    const instPane = document.getElementById('instPane');
+    const instUserInput = document.getElementById('instUserInput');
+    const instPassInput = document.getElementById('instPassInput');
+    const instLoginBtn = document.getElementById('instLoginBtn');
+    const welcomeInstBadge = document.getElementById('welcomeInstBadge');
+
+    tabPersonal.addEventListener('click', () => {
+      tabPersonal.classList.add('active');
+      tabInst.classList.remove('active');
+      personalPane.style.display = 'block';
+      instPane.style.display = 'none';
+      loginError.textContent = '';
+      phoneInput.focus();
+    });
+
+    tabInst.addEventListener('click', () => {
+      tabInst.classList.add('active');
+      tabPersonal.classList.remove('active');
+      personalPane.style.display = 'none';
+      instPane.style.display = 'block';
+      loginError.textContent = '';
+      instPassInput.focus();
+    });
+
+    instPassInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doInstLogin();
+    });
+    instUserInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') instPassInput.focus();
+    });
+    instLoginBtn.addEventListener('click', doInstLogin);
+
+    function doInstLogin() {
+      const u = instUserInput.value.trim();
+      const p = instPassInput.value.trim();
+      if ((u === '专业机构' || u.toLowerCase() === 'admin') && p === 'admin') {
+        const clientInfo = clients['admin'] || {
+          name: '专业机构', role: 'institution', password: 'admin',
+          products: [
+            {name: '晟孚泽鑫周期私募证券投资基金', code: 'zhouqi'},
+            {name: '晟孚泽鑫价值私募证券投资基金', code: 'jiazhi'}
+          ]
+        };
+        sessionStorage.setItem('sf_client', 'admin');
+        sessionStorage.setItem('sf_role', 'institution');
+        showWelcome(clientInfo);
+        overlay.classList.add('hidden');
+        loginError.textContent = '';
+      } else {
+        loginError.textContent = '机构用户名或密码错误，请核对';
+        instPassInput.value = '';
+        instPassInput.focus();
+      }
+    }
+
     function doLogin() {
       const code = phoneInput.value;
+      if (code.toLowerCase() === 'admin') {
+        doInstLogin();
+        return;
+      }
       if (clients[code]) {
         sessionStorage.setItem('sf_client', code);
+        sessionStorage.removeItem('sf_role');
         showWelcome(clients[code]);
         overlay.classList.add('hidden');
         loginError.textContent = '';
@@ -297,10 +382,18 @@
 
     function showWelcome(info) {
       welcomeName.textContent = info.name;
+      const isInst = info.role === 'institution' || sessionStorage.getItem('sf_role') === 'institution' || sessionStorage.getItem('sf_client') === 'admin';
+      if (welcomeInstBadge) {
+        welcomeInstBadge.style.display = isInst ? 'inline-flex' : 'none';
+      }
       // 显示所有购买的产品
       const productNames = info.products.map(p => p.name).join('、');
       welcomeProduct.textContent = productNames;
       welcomeBar.classList.add('show');
+      // 机构专属卡片标识
+      document.querySelectorAll('.inst-card-tag').forEach(tag => {
+        tag.style.display = isInst ? 'flex' : 'none';
+      });
       // 过滤产品显示
       filterProducts(info.products);
     }

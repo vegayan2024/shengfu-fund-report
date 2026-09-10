@@ -156,6 +156,18 @@ def process_clients():
                 'date': sh.cell_value(r, 4)
             }
 
+        # 保留专业机构账号
+        clients['admin'] = {
+            'name': '专业机构',
+            'password': 'admin',
+            'role': 'institution',
+            'products': [
+                {'name': '晟孚泽鑫周期私募证券投资基金', 'code': 'zhouqi'},
+                {'name': '晟孚泽鑫价值私募证券投资基金', 'code': 'jiazhi'}
+            ],
+            'date': '2026.09.10'
+        }
+
         json_path = PROJECT_ROOT / 'clients.json'
         with open(str(json_path), 'w', encoding='utf-8') as f:
             json.dump(clients, f, ensure_ascii=False, indent=2)

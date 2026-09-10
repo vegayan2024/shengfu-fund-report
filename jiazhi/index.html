@@ -115,7 +115,105 @@
     .chart-box { background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius-4); padding: var(--space-6); margin-bottom: var(--space-5); }
     .chart-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-5); flex-wrap: wrap; gap: var(--space-3); }
     .chart-title { font-size: var(--fs-lead); font-weight: var(--fw-semibold); color: var(--text-strong); }
-    .chart-wrap { width: 100%; height: 320px; }
+    .chart-wrap { width: 100%; height: 480px; }
+    
+    /* 机构专属量化面板网格 */
+    .chart-and-inst-grid {
+      display: flex; gap: 20px; align-items: stretch; position: relative; margin-top: 12px;
+    }
+    .chart-main-col { flex: 1; min-width: 0; transition: all 0.3s ease; }
+    .inst-panel-col {
+      width: 320px; flex-shrink: 0; background: var(--bg-raised); border: 1px solid var(--border);
+      border-radius: var(--radius-3); padding: 14px 16px; display: flex; flex-direction: column;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25); transition: width 0.3s ease, padding 0.3s ease;
+      position: relative;
+    }
+    .inst-panel-col.collapsed { width: 44px; padding: 12px 6px; overflow: hidden; }
+    .inst-panel-col.collapsed .inst-metrics-list,
+    .inst-panel-col.collapsed .inst-toolbar-left,
+    .inst-panel-col.collapsed .inst-lock-box { display: none !important; }
+    .inst-panel-col.collapsed .inst-header-toolbar { justify-content: center; }
+    .inst-panel-col.collapsed #btnInstToggle { transform: rotate(180deg); }
+
+    .inst-header-toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 8px;
+      font-size: 11px; color: var(--text-muted); gap: 6px;
+    }
+    .inst-toolbar-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .inst-tag-bench {
+      background: var(--bg-panel); border: 1px solid var(--border-strong);
+      padding: 2px 6px; border-radius: 3px; color: var(--text-strong); font-size: 11px;
+    }
+    .inst-search-btn { font-size: 11px; cursor: pointer; }
+    .inst-currency { color: var(--text-muted); }
+    .inst-followers { color: var(--text-faint); }
+    .inst-toolbar-right { display: flex; align-items: center; gap: 4px; }
+    .inst-icon-btn {
+      background: none; border: none; color: var(--text-muted); cursor: pointer;
+      padding: 3px 5px; font-size: 13px; border-radius: 3px; transition: color 0.15s, background 0.15s;
+    }
+    .inst-icon-btn:hover { color: var(--brand); background: var(--bg-panel); }
+
+    .inst-metrics-list {
+      display: flex; flex-direction: column; gap: 1px; max-height: 440px; overflow-y: auto; padding-right: 4px;
+    }
+    .inst-metrics-list::-webkit-scrollbar { width: 4px; }
+    .inst-metrics-list::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+
+    .inst-metric-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 4px 6px; border-radius: 3px; font-size: 12.5px; transition: background-color 0.15s;
+    }
+    .inst-metric-row:hover { background: var(--bg-panel); }
+    .inst-metric-name { color: var(--text); font-weight: 500; display: flex; align-items: center; gap: 4px; }
+    .inst-metric-val {
+      font-family: var(--font-mono, monospace); font-weight: 600; font-variant-numeric: tabular-nums;
+      color: var(--text-strong);
+    }
+    .inst-metric-val.rise { color: var(--rise); }
+    .inst-metric-val.fall { color: var(--fall); }
+
+    .info-tip {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 13px; height: 13px; font-size: 11px; color: var(--text-muted);
+      cursor: help; position: relative; border-radius: 50%;
+    }
+    .info-tip:hover { color: var(--brand); }
+    .info-tip:hover::after {
+      content: attr(data-tip); position: absolute; right: 0; bottom: 125%;
+      background: #101317; color: #e6e8eb; padding: 6px 10px; border-radius: 4px;
+      font-size: 11px; font-weight: 400; line-height: 1.4; white-space: normal;
+      width: 200px; border: 1px solid var(--border-strong); box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+      z-index: 100; pointer-events: none;
+    }
+
+    /* 未解锁遮罩 */
+    .inst-lock-overlay {
+      position: absolute; inset: 40px 0 0 0; background: rgba(24, 28, 35, 0.88);
+      backdrop-filter: blur(4px); display: flex; flex-direction: column;
+      align-items: center; justify-content: center; padding: 20px; text-align: center;
+      border-radius: 0 0 var(--radius-3) var(--radius-3); z-index: 10;
+    }
+    .inst-lock-title { font-size: 14px; font-weight: 600; color: var(--text-strong); margin-bottom: 6px; }
+    .inst-lock-desc { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5; }
+    .inst-unlock-input {
+      width: 160px; padding: 6px 10px; background: var(--bg-raised); border: 1px solid var(--border);
+      border-radius: 4px; color: var(--text-strong); font-size: 12px; text-align: center;
+      outline: none; margin-bottom: 8px;
+    }
+    .inst-unlock-btn {
+      padding: 6px 16px; background: var(--accent); color: #fff; border: none;
+      border-radius: 4px; font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+    .inst-unlock-btn:hover { opacity: 0.9; }
+
+    @media (max-width: 900px) {
+      .chart-and-inst-grid { flex-direction: column; }
+      .inst-panel-col { width: 100%; }
+      .inst-panel-col.collapsed { display: none; }
+      .chart-wrap { height: 320px; }
+    }
     @media (max-width: 768px) { .chart-wrap { height: 240px; } }
 
     .period-tabs { display: flex; gap: var(--space-2); }
@@ -227,7 +325,36 @@
             </div>
           </div>
         </div>
-        <div class="chart-wrap" id="navChart"></div>
+        <div class="chart-and-inst-grid" id="chartMainContainer">
+          <div class="chart-main-col">
+            <div class="chart-wrap" id="navChart"></div>
+          </div>
+          <div class="inst-panel-col" id="instPanel">
+            <!-- 顶部工具栏 严格还原图片 -->
+            <div class="inst-header-toolbar">
+              <div class="inst-toolbar-left">
+                <span class="inst-tag-bench">沪深300 <span style="font-size:9px;">▼</span></span>
+                <span class="inst-search-btn" title="检索">🔍</span>
+                <span class="inst-currency">报告货币: 人民币 <span style="font-size:9px;">▼</span></span>
+                <span class="inst-followers">关注人数: 5</span>
+              </div>
+              <div class="inst-toolbar-right">
+                <button type="button" class="inst-icon-btn" id="btnInstExpand" title="全屏/宽屏">⛶</button>
+                <button type="button" class="inst-icon-btn" id="btnInstToggle" title="收起/展开面板">«</button>
+              </div>
+            </div>
+            <!-- 22项指标列表 -->
+            <div class="inst-metrics-list" id="instMetricsList"></div>
+            <!-- 未解锁提示遮罩 -->
+            <div class="inst-lock-overlay" id="instLockOverlay" style="display:none;">
+              <div class="inst-lock-title">🔒 专业机构深度量化指标</div>
+              <div class="inst-lock-desc">包含 Alpha、Beta、跟踪误差等 22 项全量指标，请输入机构密码解锁查看。</div>
+              <input type="password" id="instQuickPass" class="inst-unlock-input" placeholder="输入密码(admin)">
+              <button type="button" id="btnInstUnlock" class="inst-unlock-btn">一键解锁</button>
+              <div id="instUnlockErr" style="color:var(--rise);font-size:11px;margin-top:6px;"></div>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="two-col">
         <div class="chart-box">
@@ -297,11 +424,18 @@
         const saved = sessionStorage.getItem('sf_client');
         if (saved && clients[saved]) {
           const client = clients[saved];
-          // 如果客户购买了多只产品，显示导航栏
-          if (client.products.length > 1) {
+          // 如果客户购买了多只产品或为专业机构，显示导航栏
+          if (client.products.length > 1 || client.role === 'institution') {
             const productNav = document.getElementById('productNav');
             const productNavBtns = document.getElementById('productNavBtns');
             productNav.classList.add('show');
+
+            if (client.role === 'institution' || saved === 'admin') {
+              const badge = document.createElement('span');
+              badge.style.cssText = 'padding:2px 8px;background:rgba(61,169,252,0.15);color:#3da9fc;font-size:12px;font-weight:600;border-radius:3px;margin-right:8px;border:1px solid rgba(61,169,252,0.3);';
+              badge.textContent = '🏛️ 专业机构认证 · 已开启深度量化指标';
+              productNav.insertBefore(badge, productNavBtns);
+            }
 
             // 生成产品按钮
             client.products.forEach(product => {
@@ -492,6 +626,103 @@
       yAxis: { type: 'value', ...ax, axisLabel: { ...ax.axisLabel, formatter: '{value}%' } },
       series: [{ type: 'bar', data: monthlyData.map(d => d.v), barWidth: 18, itemStyle: { borderRadius: [3,3,0,0], color: p => p.value >= 0 ? C.rise : C.fall } }],
     });
+
+    // ============================================================
+    // 专业机构 22 项量化指标定义与渲染（严格遵照图片中数据名称）
+    // ============================================================
+    const INST_METRICS = [
+      { name: '绝对回报', tip: '统计区间内基金单位净值的累计涨幅', val: '21.58%', type: 'rise' },
+      { name: '相对回报', tip: null, val: '-4.67%', type: 'fall' },
+      { name: '相对回报(几何)', tip: '(1 + 基金累计收益) / (1 + 基准累计收益) - 1，衡量相对基准的几何超额收益', val: '-3.70%', type: 'fall' },
+      { name: '本周回报', tip: null, val: '1.15%', type: 'rise' },
+      { name: '本月回报', tip: null, val: '4.82%', type: 'rise' },
+      { name: '本季回报', tip: null, val: '8.30%', type: 'rise' },
+      { name: '本年回报', tip: null, val: '15.42%', type: 'rise' },
+      { name: '年化收益率', tip: null, val: '10.80%', type: 'rise' },
+      { name: '年化波动率', tip: null, val: '14.80%', type: 'neutral' },
+      { name: 'Sharpe', tip: '夏普比率，衡量承担每单位总风险所获得的超额报酬', val: '1.52', type: 'rise' },
+      { name: 'Alpha', tip: '詹森阿尔法 (Jensen\'s Alpha)，超额选股收益能力', val: '8.65%', type: 'rise' },
+      { name: 'Beta', tip: '贝塔系数，相对于基准市场的系统性敏感度', val: '0.62', type: 'neutral' },
+      { name: '跟踪误差', tip: '相对基准超额收益的标准差，衡量跟踪偏离的稳定性', val: '2.10%', type: 'neutral' },
+      { name: '年化跟踪误差', tip: null, val: '12.35%', type: 'neutral' },
+      { name: '信息比率', tip: 'Information Ratio，超额收益与跟踪误差之比，衡量主动管理能力', val: '0.45', type: 'rise' },
+      { name: '最大回撤', tip: null, val: '-8.60%', type: 'fall' },
+      { name: '日胜率', tip: null, val: '54.20%', type: 'rise' },
+      { name: '周胜率', tip: null, val: '58.60%', type: 'rise' },
+      { name: '月胜率', tip: null, val: '66.70%', type: 'rise' },
+      { name: 'Calmar', tip: '卡玛比率，年化收益率与历史最大回撤之比', val: '1.26', type: 'rise' },
+      { name: '换手率', tip: '报告期内股票买卖总量占资产净值的周转频率', val: '142.50%', type: 'neutral' },
+      { name: '平均持仓天数', tip: '投资组合中持仓股票的加权平均持有天数', val: '480.25', type: 'neutral' },
+    ];
+
+    function renderInstMetrics() {
+      const listEl = document.getElementById('instMetricsList');
+      if (!listEl) return;
+      listEl.innerHTML = INST_METRICS.map(m => `
+        <div class="inst-metric-row">
+          <div class="inst-metric-name">
+            ${m.name}
+            ${m.tip ? `<span class="info-tip" data-tip="${m.tip}">ⓘ</span>` : ''}
+          </div>
+          <div class="inst-metric-val ${m.type}">${m.val}</div>
+        </div>
+      `).join('');
+    }
+
+    function checkInstStatus() {
+      const saved = sessionStorage.getItem('sf_client');
+      const role = sessionStorage.getItem('sf_role');
+      const isInst = saved === 'admin' || role === 'institution';
+      const lockEl = document.getElementById('instLockOverlay');
+      if (lockEl) {
+        lockEl.style.display = isInst ? 'none' : 'flex';
+      }
+    }
+
+    renderInstMetrics();
+    checkInstStatus();
+
+    // 解锁逻辑
+    const btnUnlock = document.getElementById('btnInstUnlock');
+    const inputPass = document.getElementById('instQuickPass');
+    const errEl = document.getElementById('instUnlockErr');
+    if (btnUnlock && inputPass) {
+      const doUnlock = () => {
+        if (inputPass.value.trim() === 'admin') {
+          sessionStorage.setItem('sf_client', 'admin');
+          sessionStorage.setItem('sf_role', 'institution');
+          checkInstStatus();
+        } else {
+          errEl.textContent = '密码错误，请核对';
+          inputPass.value = '';
+        }
+      };
+      btnUnlock.addEventListener('click', doUnlock);
+      inputPass.addEventListener('keydown', e => { if (e.key === 'Enter') doUnlock(); });
+    }
+
+    // 收起/展开逻辑
+    const instPanel = document.getElementById('instPanel');
+    const btnToggle = document.getElementById('btnInstToggle');
+    if (btnToggle && instPanel) {
+      btnToggle.addEventListener('click', () => {
+        instPanel.classList.toggle('collapsed');
+        setTimeout(() => { navChart.resize(); }, 350);
+      });
+    }
+
+    // 全屏/宽屏查看
+    const btnExpand = document.getElementById('btnInstExpand');
+    const chartMain = document.getElementById('chartMainContainer');
+    if (btnExpand && chartMain) {
+      btnExpand.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+          chartMain.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+      });
+    }
 
     window.addEventListener('resize', () => { navChart.resize(); returnChart.resize(); monthlyChart.resize(); });
     })(); // async IIFE end
