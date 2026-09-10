@@ -167,7 +167,7 @@
       </div>
       <div id="personalPane">
         <p class="login-hint">请输入您登记手机号的后四位</p>
-        <input type="text" id="phoneInput" maxlength="4" pattern="\d{4}" inputmode="numeric" placeholder="手机号后四位" autocomplete="off">
+        <input type="text" id="phoneInput" maxlength="10" placeholder="手机号后四位" autocomplete="off">
         <button class="login-btn" id="loginBtn" disabled>验证身份</button>
       </div>
       <div id="instPane" style="display:none;">
@@ -244,8 +244,9 @@
     </div>
   </div>
 
-  <script>
+    <script>
   (async () => {
+    // 1. 优先获取所有 DOM 元素，防止 TDZ (Temporal Dead Zone)
     const overlay = document.getElementById('loginOverlay');
     const phoneInput = document.getElementById('phoneInput');
     const loginBtn = document.getElementById('loginBtn');
@@ -253,55 +254,10 @@
     const welcomeBar = document.getElementById('welcomeBar');
     const welcomeName = document.getElementById('welcomeName');
     const welcomeProduct = document.getElementById('welcomeProduct');
+    const welcomeInstBadge = document.getElementById('welcomeInstBadge');
     const logoutBtn = document.getElementById('logoutBtn');
     const productsContainer = document.getElementById('productsContainer');
 
-    let clients = {};
-    try {
-      const resp = await fetch('./clients.json');
-      if (!resp.ok) throw new Error(resp.status);
-      clients = await resp.json();
-    } catch (e) {
-      console.error('无法加载客户数据:', e);
-      loginError.textContent = '系统异常，请联系管理员';
-      document.getElementById('phoneInput').disabled = true;
-      document.getElementById('loginBtn').disabled = true;
-    }
-
-    // 检查已登录状态
-    const saved = sessionStorage.getItem('sf_client');
-    if (saved && clients[saved]) {
-      showWelcome(clients[saved]);
-      overlay.classList.add('hidden');
-    }
-
-    // 输入验证
-    phoneInput.addEventListener('input', () => {
-      phoneInput.value = phoneInput.value.replace(/\D/g, '');
-      loginBtn.disabled = phoneInput.value.length !== 4;
-    });
-
-    // 回车提交
-    phoneInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && phoneInput.value.length === 4) doLogin();
-    });
-
-    // 登录按钮
-    loginBtn.addEventListener('click', doLogin);
-
-    // 退出登录
-    logoutBtn.addEventListener('click', () => {
-      sessionStorage.removeItem('sf_client');
-      welcomeBar.classList.remove('show');
-      overlay.classList.remove('hidden');
-      phoneInput.value = '';
-      loginError.textContent = '';
-      loginBtn.disabled = true;
-      // 显示所有产品
-      filterProducts(null);
-    });
-
-    // 选项卡切换
     const tabPersonal = document.getElementById('tabPersonal');
     const tabInst = document.getElementById('tabInst');
     const personalPane = document.getElementById('personalPane');
@@ -309,8 +265,176 @@
     const instUserInput = document.getElementById('instUserInput');
     const instPassInput = document.getElementById('instPassInput');
     const instLoginBtn = document.getElementById('instLoginBtn');
-    const welcomeInstBadge = document.getElementById('welcomeInstBadge');
 
+    // 2. 内置默认客户数据（支持 file:// 离线协议及网络故障平滑降级）
+    const DEFAULT_CLIENTS = {
+      "9554": {
+        "name": "小土狗",
+        "products": [
+          { "name": "晟孚泽鑫周期私募证券投资基金", "code": "zhouqi" }
+        ],
+        "date": "2025.10.1"
+      },
+      "5263": {
+        "name": "大灰狼",
+        "products": [
+          { "name": "晟孚泽鑫周期私募证券投资基金", "code": "zhouqi" }
+        ],
+        "date": "2025.10.2"
+      },
+      "4879": {
+        "name": "牛来",
+        "products": [
+          { "name": "晟孚泽鑫价值私募证券投资基金", "code": "jiazhi" }
+        ],
+        "date": "2025.10.3"
+      },
+      "7854": {
+        "name": "熊去",
+        "products": [
+          { "name": "晟孚泽鑫价值私募证券投资基金", "code": "jiazhi" }
+        ],
+        "date": "2025.10.4"
+      },
+      "admin": {
+        "name": "专业机构",
+        "password": "admin",
+        "role": "institution",
+        "products": [
+          { "name": "晟孚泽鑫周期私募证券投资基金", "code": "zhouqi" },
+          { "name": "晟孚泽鑫价值私募证券投资基金", "code": "jiazhi" }
+        ],
+        "date": "2026.09.10"
+      }
+    };
+
+    let clients = { ...DEFAULT_CLIENTS };
+
+    // 3. 异步尝试读取 clients.json，若失败保留 DEFAULT_CLIENTS，绝不禁用输入框
+    try {
+      const resp = await fetch('./clients.json');
+      if (resp.ok) {
+        const remoteClients = await resp.json();
+        clients = { ...DEFAULT_CLIENTS, ...remoteClients };
+      }
+    } catch (e) {
+      console.warn('正在使用内置客户数据（离线或本地 file 协议）');
+    }
+
+    // 4. 辅助函数：显示欢迎信息与过滤产品
+    function showWelcome(info) {
+      if (!info) return;
+      welcomeName.textContent = info.name || '客户';
+      const isInst = info.role === 'institution' || sessionStorage.getItem('sf_role') === 'institution' || sessionStorage.getItem('sf_client') === 'admin';
+
+      if (welcomeInstBadge) {
+        welcomeInstBadge.style.display = isInst ? 'inline-flex' : 'none';
+      }
+
+      // 提取购买产品列表
+      const prods = Array.isArray(info.products) ? info.products : [];
+      const productNames = prods.map(p => p.name).join('、');
+      welcomeProduct.textContent = productNames || '全部产品';
+      welcomeBar.classList.add('show');
+
+      // 机构专属卡片标识
+      document.querySelectorAll('.inst-card-tag').forEach(tag => {
+        tag.style.display = isInst ? 'flex' : 'none';
+      });
+
+      // 过滤产品显示
+      filterProducts(prods);
+    }
+
+    function filterProducts(products) {
+      const allCards = productsContainer.querySelectorAll('.product-card');
+      if (!products || products.length === 0) {
+        allCards.forEach(card => card.style.display = '');
+      } else {
+        const productCodes = products.map(p => p.code);
+        allCards.forEach(card => {
+          const cardProduct = card.getAttribute('data-product');
+          card.style.display = productCodes.includes(cardProduct) ? '' : 'none';
+        });
+      }
+    }
+
+    function loginAsInst() {
+      const clientInfo = clients['admin'] || DEFAULT_CLIENTS['admin'];
+      sessionStorage.setItem('sf_client', 'admin');
+      sessionStorage.setItem('sf_role', 'institution');
+      showWelcome(clientInfo);
+      overlay.classList.add('hidden');
+      loginError.textContent = '';
+    }
+
+    function doLogin() {
+      const val = phoneInput.value.trim();
+      if (!val) {
+        loginError.textContent = '请输入手机尾号后4位或机构代码';
+        return;
+      }
+      if (val.toLowerCase() === 'admin' || val === '专业机构') {
+        loginAsInst();
+        return;
+      }
+      if (clients[val]) {
+        sessionStorage.setItem('sf_client', val);
+        sessionStorage.removeItem('sf_role');
+        showWelcome(clients[val]);
+        overlay.classList.add('hidden');
+        loginError.textContent = '';
+      } else {
+        loginError.textContent = '手机尾号未登记，请核对或联系基金管理人';
+        loginBtn.disabled = true;
+        phoneInput.focus();
+      }
+    }
+
+    function doInstLogin() {
+      const u = instUserInput.value.trim();
+      const p = instPassInput.value.trim();
+      if (!p) {
+        loginError.textContent = '请输入机构密码';
+        instPassInput.focus();
+        return;
+      }
+      if (p === 'admin' || (u.toLowerCase() === 'admin' && p === 'admin')) {
+        loginAsInst();
+      } else {
+        loginError.textContent = '机构密码错误，请重新核对';
+        instPassInput.value = '';
+        instPassInput.focus();
+      }
+    }
+
+    // 5. 检查已登录状态（确保 showWelcome 在声明后执行）
+    const saved = sessionStorage.getItem('sf_client');
+    if (saved && clients[saved]) {
+      showWelcome(clients[saved]);
+      overlay.classList.add('hidden');
+    }
+
+    // 6. 绑定输入验证逻辑：输入4位数字或 admin 均可点亮验证按钮
+    phoneInput.addEventListener('input', () => {
+      const val = phoneInput.value.trim();
+      const is4Digits = /^\d{4}$/.test(val);
+      const isInstCode = val.toLowerCase() === 'admin' || val === '专业机构';
+      loginBtn.disabled = !(is4Digits || isInstCode);
+      if (loginBtn.disabled === false) {
+        loginError.textContent = '';
+      }
+    });
+
+    phoneInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !loginBtn.disabled) {
+        doLogin();
+      }
+    });
+
+    loginBtn.addEventListener('click', doLogin);
+
+    // 7. 选项卡切换逻辑
     tabPersonal.addEventListener('click', () => {
       tabPersonal.classList.add('active');
       tabInst.classList.remove('active');
@@ -329,89 +453,33 @@
       instPassInput.focus();
     });
 
-    instPassInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') doInstLogin();
-    });
     instUserInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') instPassInput.focus();
-    });
-    instLoginBtn.addEventListener('click', doInstLogin);
-
-    function doInstLogin() {
-      const u = instUserInput.value.trim();
-      const p = instPassInput.value.trim();
-      if ((u === '专业机构' || u.toLowerCase() === 'admin' || u === '') && p === 'admin') {
-        const clientInfo = clients['admin'] || {
-          name: '专业机构', role: 'institution', password: 'admin',
-          products: [
-            {name: '晟孚泽鑫周期私募证券投资基金', code: 'zhouqi'},
-            {name: '晟孚泽鑫价值私募证券投资基金', code: 'jiazhi'}
-          ]
-        };
-        sessionStorage.setItem('sf_client', 'admin');
-        sessionStorage.setItem('sf_role', 'institution');
-        showWelcome(clientInfo);
-        overlay.classList.add('hidden');
-        loginError.textContent = '';
-      } else {
-        loginError.textContent = '机构用户名或密码错误，请核对';
-        instPassInput.value = '';
+      if (e.key === 'Enter') {
         instPassInput.focus();
       }
-    }
+    });
 
-    function doLogin() {
-      const code = phoneInput.value;
-      if (code.toLowerCase() === 'admin') {
+    instPassInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
         doInstLogin();
-        return;
       }
-      if (clients[code]) {
-        sessionStorage.setItem('sf_client', code);
-        sessionStorage.removeItem('sf_role');
-        showWelcome(clients[code]);
-        overlay.classList.add('hidden');
-        loginError.textContent = '';
-      } else {
-        loginError.textContent = '手机号未登记，请联系基金管理人';
-        phoneInput.value = '';
-        loginBtn.disabled = true;
-        phoneInput.focus();
-      }
-    }
+    });
 
-    function showWelcome(info) {
-      welcomeName.textContent = info.name;
-      const isInst = info.role === 'institution' || sessionStorage.getItem('sf_role') === 'institution' || sessionStorage.getItem('sf_client') === 'admin';
-      if (welcomeInstBadge) {
-        welcomeInstBadge.style.display = isInst ? 'inline-flex' : 'none';
-      }
-      // 显示所有购买的产品
-      const productNames = info.products.map(p => p.name).join('、');
-      welcomeProduct.textContent = productNames;
-      welcomeBar.classList.add('show');
-      // 机构专属卡片标识
-      document.querySelectorAll('.inst-card-tag').forEach(tag => {
-        tag.style.display = isInst ? 'flex' : 'none';
-      });
-      // 过滤产品显示
-      filterProducts(info.products);
-    }
+    instLoginBtn.addEventListener('click', doInstLogin);
 
-    function filterProducts(products) {
-      const allCards = productsContainer.querySelectorAll('.product-card');
-      if (!products) {
-        // 未登录，显示所有产品
-        allCards.forEach(card => card.style.display = '');
-      } else {
-        // 已登录，只显示客户购买的产品
-        const productCodes = products.map(p => p.code);
-        allCards.forEach(card => {
-          const cardProduct = card.getAttribute('data-product');
-          card.style.display = productCodes.includes(cardProduct) ? '' : 'none';
-        });
-      }
-    }
+    // 8. 退出登录
+    logoutBtn.addEventListener('click', () => {
+      sessionStorage.removeItem('sf_client');
+      sessionStorage.removeItem('sf_role');
+      welcomeBar.classList.remove('show');
+      overlay.classList.remove('hidden');
+      phoneInput.value = '';
+      instPassInput.value = '';
+      loginError.textContent = '';
+      loginBtn.disabled = true;
+      tabPersonal.click();
+      filterProducts(null);
+    });
   })();
   </script>
 </body>
