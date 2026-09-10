@@ -674,37 +674,81 @@
             ],
           }, true);
         } else {
-          // 累计净值：仅展示基金累计净值走势，标记最新净值
-          const navMin = Math.min(...data.nav) * 0.98;
+          // 累计净值：同时展示本基金累计净值与沪深300同期走势对比
+          const benchActual = data.benchmark.map(v => Number(((v / data.benchmark[0]) * data.nav[0]).toFixed(4)));
+          const allVals = [...data.nav, ...benchActual];
+          const navMin = Math.min(...allVals) * 0.98;
           const totalReturn = ((data.nav[data.nav.length - 1] / data.nav[0] - 1) * 100).toFixed(2);
+          const benchReturn = ((data.benchmark[data.benchmark.length - 1] / data.benchmark[0] - 1) * 100).toFixed(2);
+          const excessReturn = (totalReturn - benchReturn).toFixed(2);
           const latestVal = data.nav[data.nav.length - 1].toFixed(4);
+          const latestBenchVal = benchActual[benchActual.length - 1].toFixed(4);
           const latestDate = data.dates[data.dates.length - 1];
-          titleEl.textContent = '累计净值 · 本基金';
+          titleEl.textContent = '累计净值 · 本基金 vs 沪深300';
 
           navChart.setOption({
             tooltip: {
               trigger: 'axis', ...tp,
               formatter: params => {
-                const p = params[0];
-                return `<div style="font-size:12px;color:${C.textStrong};margin-bottom:6px">${p.axisValue}</div>
-                  <div style="display:flex;align-items:center;gap:6px;margin:3px 0">
-                    <span style="width:8px;height:8px;border-radius:50%;background:${C.brand}"></span>
-                    <span style="color:${C.text}">累计净值：</span>
-                    <span style="color:${C.textStrong};font-weight:600;font-family:monospace">${p.value.toFixed(4)}</span>
-                  </div>
-                  <div style="border-top:1px solid ${C.border};margin-top:6px;padding-top:6px;font-size:11px">
-                    <div style="color:${C.textMuted}">区间收益</div>
-                    <div style="color:${totalReturn >= 0 ? C.rise : C.fall}">${totalReturn >= 0 ? '+' : ''}${totalReturn}%</div>
+                let html = `<div style="font-size:12px;color:${C.textStrong};margin-bottom:6px">${params[0].axisValue}</div>`;
+                params.forEach(p => {
+                  const isFund = p.seriesName === '本基金';
+                  const color = isFund ? C.brand : C.info;
+                  const label = isFund ? '本基金(累计净值)：' : '沪深300(同期对标)：';
+                  html += `<div style="display:flex;align-items:center;gap:6px;margin:3px 0">
+                    <span style="width:8px;height:8px;border-radius:50%;background:${color}"></span>
+                    <span style="color:${C.text}">${label}</span>
+                    <span style="color:${C.textStrong};font-weight:600;font-family:monospace">${Number(p.value).toFixed(4)}</span>
                   </div>`;
+                });
+                html += `<div style="border-top:1px solid ${C.border};margin-top:6px;padding-top:6px;font-size:11px">
+                  <div style="color:${C.textMuted}">区间收益对比</div>
+                  <div style="color:${totalReturn >= 0 ? C.rise : C.fall}">本基金：${totalReturn >= 0 ? '+' : ''}${totalReturn}%</div>
+                  <div style="color:${C.text}">沪深300：${benchReturn >= 0 ? '+' : ''}${benchReturn}%</div>
+                  <div style="color:${excessReturn >= 0 ? C.rise : C.fall}">超额：${excessReturn >= 0 ? '+' : ''}${excessReturn}%</div>
+                </div>`;
+                return html;
               }
             },
-            legend: { show: false },
+            legend: { data: ['本基金', '沪深300'], right: 0, top: 0, textStyle: { color: C.textMuted, fontSize: 11 }, itemWidth: 16, itemHeight: 2 },
             grid: { left: 56, right: 80, top: 40, bottom: 30 },
             xAxis: { type: 'category', data: data.dates, ...ax, boundaryGap: false },
             yAxis: { type: 'value', ...ax, min: navMin.toFixed(4) },
             series: [
-              { name: '累计净值', type: 'line', data: data.nav, smooth: true, symbol: 'none', lineStyle: { width: 2, color: C.brand }, areaStyle: { color: { type: 'linear', x: 0, y: 0, x2: 0, y2: 1, colorStops: [{ offset: 0, color: 'rgba(245,165,36,0.12)' }, { offset: 1, color: 'rgba(245,165,36,0)' }] } },
-                markPoint: { symbol: 'circle', symbolSize: 6, label: { show: true, position: 'right', color: C.brand, fontSize: 12, fontWeight: 600, fontFamily: 'monospace', formatter: latestVal, offset: [4, 0] }, itemStyle: { color: C.brand }, data: [{ coord: [latestDate, data.nav[data.nav.length - 1]] }] } },
+              {
+                name: '本基金',
+                type: 'line',
+                data: data.nav,
+                smooth: true,
+                symbol: 'none',
+                lineStyle: { width: 2, color: C.brand },
+                areaStyle: {
+                  color: {
+                    type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+                    colorStops: [{ offset: 0, color: 'rgba(245,165,36,0.12)' }, { offset: 1, color: 'rgba(245,165,36,0)' }]
+                  }
+                },
+                markPoint: {
+                  symbol: 'circle', symbolSize: 6,
+                  label: { show: true, position: 'right', color: C.brand, fontSize: 12, fontWeight: 600, fontFamily: 'monospace', formatter: latestVal, offset: [4, 0] },
+                  itemStyle: { color: C.brand },
+                  data: [{ coord: [latestDate, data.nav[data.nav.length - 1]] }]
+                }
+              },
+              {
+                name: '沪深300',
+                type: 'line',
+                data: benchActual,
+                smooth: true,
+                symbol: 'none',
+                lineStyle: { width: 1.5, color: C.info, type: 'dashed' },
+                markPoint: {
+                  symbol: 'circle', symbolSize: 6,
+                  label: { show: true, position: 'right', color: C.info, fontSize: 11, fontWeight: 500, fontFamily: 'monospace', formatter: latestBenchVal, offset: [4, 0] },
+                  itemStyle: { color: C.info },
+                  data: [{ coord: [latestDate, benchActual[benchActual.length - 1]] }]
+                }
+              },
             ],
           }, true);
         }
