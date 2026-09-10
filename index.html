@@ -171,9 +171,9 @@
         <button class="login-btn" id="loginBtn" disabled>验证身份</button>
       </div>
       <div id="instPane" style="display:none;">
-        <p class="login-hint">请输入专业机构账号与密码</p>
-        <input type="text" id="instUserInput" class="inst-input" placeholder="用户名（专业机构）" value="专业机构" autocomplete="off" style="margin-bottom:12px;">
-        <input type="password" id="instPassInput" class="inst-input" placeholder="机构密码（admin）" autocomplete="off">
+        <p class="login-hint">请输入机构认证账号与密码</p>
+        <input type="text" id="instUserInput" class="inst-input" placeholder="请输入机构账号" autocomplete="off" style="margin-bottom:12px;">
+        <input type="password" id="instPassInput" class="inst-input" placeholder="请输入密码" autocomplete="off">
         <button class="login-btn" id="instLoginBtn">机构登录</button>
       </div>
       <div class="login-error" id="loginError"></div>
@@ -340,7 +340,7 @@
     function doInstLogin() {
       const u = instUserInput.value.trim();
       const p = instPassInput.value.trim();
-      if ((u === '专业机构' || u.toLowerCase() === 'admin') && p === 'admin') {
+      if ((u === '专业机构' || u.toLowerCase() === 'admin' || u === '') && p === 'admin') {
         const clientInfo = clients['admin'] || {
           name: '专业机构', role: 'institution', password: 'admin',
           products: [
