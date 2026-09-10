@@ -196,6 +196,7 @@ def process_clients():
 
     try:
         import xlrd
+        import re
         wb = xlrd.open_workbook(str(client_file))
         sh = wb.sheet_by_index(0)
 
@@ -208,23 +209,27 @@ def process_clients():
 
         clients = {}
         for r in range(1, sh.nrows):
-            phone = str(int(sh.cell_value(r, 2)))
-            last4 = phone[-4:]
-            p_name = str(sh.cell_value(r, 3)).strip()
-            p_code = product_code_map.get(p_name, 'zhouqi')
-            prod_obj = {'name': p_name, 'code': p_code}
+            row = [sh.cell_value(r, c) for c in range(sh.ncols)]
+            name = str(row[1]).strip()
+            phone_raw = str(int(row[2]) if isinstance(row[2], float) else row[2]).strip()
+            last4 = phone_raw[-4:]
+            p_field = str(row[3]).strip()
+            date_val = str(row[4]).strip()
 
-            if last4 in clients:
-                if not any(p['code'] == p_code for p in clients[last4]['products']):
-                    clients[last4]['products'].append(prod_obj)
-            else:
-                clients[last4] = {
-                    'name': str(sh.cell_value(r, 1)).strip(),
-                    'products': [prod_obj],
-                    'date': str(sh.cell_value(r, 4)).strip()
-                }
+            p_names = [p.strip() for p in re.split(r'[；;]+', p_field) if p.strip()]
+            products = []
+            for p_name in p_names:
+                code = product_code_map.get(p_name, 'zhouqi' if '周期' in p_name else 'jiazhi')
+                products.append({'name': p_name, 'code': code})
 
-        # 保留专业机构账号（登录验证使用）
+            clients[last4] = {
+                'name': name,
+                'phone': phone_raw,
+                'products': products,
+                'date': date_val
+            }
+
+        # 保留专业机构账号
         clients['admin'] = {
             'name': '专业机构',
             'password': 'admin',

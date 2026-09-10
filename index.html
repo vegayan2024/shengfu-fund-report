@@ -189,6 +189,8 @@
       <span class="sep">|</span>
       <span>持有产品：</span>
       <span class="user-product" id="welcomeProduct"></span>
+      <span class="sep" id="welcomeDateSep" style="display:none;">|</span>
+      <span id="welcomeDateContainer" style="display:none;"><span>购买产品日期：</span><span class="user-date" id="welcomeDate" style="color:var(--brand);font-weight:600;"></span></span>
     </div>
     <div style="display:flex;align-items:center;gap:12px;">
       <span style="font-size:12px;color:var(--text-muted);">若产品不符请退出并致电 40000000</span>
@@ -225,7 +227,7 @@
             <span><span class="meta-label">基金经理</span> <span class="meta-value">张璇</span></span>
             <span><span class="meta-label">月度收益</span> <span class="meta-value blur-val" style="color:var(--rise)">+6.18%</span></span>
           </div>
-          <div class="inst-card-tag" id="zhouqiInstTag">⭐ 专业机构视角：已解锁全量 22 项深度量化指标</div>
+          <div class="inst-card-tag" id="zhouqiInstTag">⭐ 专业机构视角：已解锁深度量化指标</div>
         </a>
         <a href="./jiazhi/" class="product-card" data-product="jiazhi">
           <div class="product-header">
@@ -238,7 +240,7 @@
             <span><span class="meta-label">基金经理</span> <span class="meta-value">刘备</span></span>
             <span><span class="meta-label">月度收益</span> <span class="meta-value blur-val" style="color:var(--rise)">+5.12%</span></span>
           </div>
-          <div class="inst-card-tag" id="jiazhiInstTag">⭐ 专业机构视角：已解锁全量 22 项深度量化指标</div>
+          <div class="inst-card-tag" id="jiazhiInstTag">⭐ 专业机构视角：已解锁深度量化指标</div>
         </a>
       </div>
     </div>
@@ -270,20 +272,40 @@
     const DEFAULT_CLIENTS = {
       "9554": {
         "name": "小土狗",
+        "phone": "13501159554",
         "products": [
-          { "name": "晟孚泽鑫周期私募证券投资基金", "code": "zhouqi" }
+          { "name": "晟孚泽鑫周期私募证券投资基金", "code": "zhouqi" },
+          { "name": "晟孚泽鑫价值私募证券投资基金", "code": "jiazhi" }
         ],
         "date": "2025.10.1"
       },
-      "5263": {
+      "1234": {
         "name": "大灰狼",
+        "phone": "13881441234",
         "products": [
           { "name": "晟孚泽鑫周期私募证券投资基金", "code": "zhouqi" }
         ],
         "date": "2025.10.2"
       },
+      "5263": {
+        "name": "大灰狼",
+        "phone": "13881441234",
+        "products": [
+          { "name": "晟孚泽鑫周期私募证券投资基金", "code": "zhouqi" }
+        ],
+        "date": "2025.10.2"
+      },
+      "5678": {
+        "name": "牛来",
+        "phone": "13001255678",
+        "products": [
+          { "name": "晟孚泽鑫价值私募证券投资基金", "code": "jiazhi" }
+        ],
+        "date": "2025.10.3"
+      },
       "4879": {
         "name": "牛来",
+        "phone": "13001255678",
         "products": [
           { "name": "晟孚泽鑫价值私募证券投资基金", "code": "jiazhi" }
         ],
@@ -291,6 +313,7 @@
       },
       "7854": {
         "name": "熊去",
+        "phone": "13225697854",
         "products": [
           { "name": "晟孚泽鑫价值私募证券投资基金", "code": "jiazhi" }
         ],
@@ -335,6 +358,22 @@
       const prods = Array.isArray(info.products) ? info.products : [];
       const productNames = prods.map(p => p.name).join('、');
       welcomeProduct.textContent = productNames || '全部产品';
+
+      // 显示购买产品日期（个人投资者展示，专业机构不展示）
+      const welcomeDateSep = document.getElementById('welcomeDateSep');
+      const welcomeDateContainer = document.getElementById('welcomeDateContainer');
+      const welcomeDate = document.getElementById('welcomeDate');
+      if (welcomeDateContainer && welcomeDate) {
+        if (!isInst && info.date) {
+          welcomeDate.textContent = info.date;
+          welcomeDateContainer.style.display = 'inline-flex';
+          if (welcomeDateSep) welcomeDateSep.style.display = 'inline';
+        } else {
+          welcomeDateContainer.style.display = 'none';
+          if (welcomeDateSep) welcomeDateSep.style.display = 'none';
+        }
+      }
+
       welcomeBar.classList.add('show');
 
       // 机构专属卡片标识

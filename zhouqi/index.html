@@ -288,28 +288,105 @@
     // 检查登录状态并显示产品导航
     // ============================================================
     async function checkLoginAndShowNav() {
+    const DEFAULT_CLIENTS = {
+      "9554": {
+        "name": "小土狗",
+        "phone": "13501159554",
+        "products": [
+          { "name": "晟孚泽鑫周期私募证券投资基金", "code": "zhouqi" },
+          { "name": "晟孚泽鑫价值私募证券投资基金", "code": "jiazhi" }
+        ],
+        "date": "2025.10.1"
+      },
+      "1234": {
+        "name": "大灰狼",
+        "phone": "13881441234",
+        "products": [
+          { "name": "晟孚泽鑫周期私募证券投资基金", "code": "zhouqi" }
+        ],
+        "date": "2025.10.2"
+      },
+      "5263": {
+        "name": "大灰狼",
+        "phone": "13881441234",
+        "products": [
+          { "name": "晟孚泽鑫周期私募证券投资基金", "code": "zhouqi" }
+        ],
+        "date": "2025.10.2"
+      },
+      "5678": {
+        "name": "牛来",
+        "phone": "13001255678",
+        "products": [
+          { "name": "晟孚泽鑫价值私募证券投资基金", "code": "jiazhi" }
+        ],
+        "date": "2025.10.3"
+      },
+      "4879": {
+        "name": "牛来",
+        "phone": "13001255678",
+        "products": [
+          { "name": "晟孚泽鑫价值私募证券投资基金", "code": "jiazhi" }
+        ],
+        "date": "2025.10.3"
+      },
+      "7854": {
+        "name": "熊去",
+        "phone": "13225697854",
+        "products": [
+          { "name": "晟孚泽鑫价值私募证券投资基金", "code": "jiazhi" }
+        ],
+        "date": "2025.10.4"
+      },
+      "admin": {
+        "name": "专业机构",
+        "password": "admin",
+        "role": "institution",
+        "products": [
+          { "name": "晟孚泽鑫周期私募证券投资基金", "code": "zhouqi" },
+          { "name": "晟孚泽鑫价值私募证券投资基金", "code": "jiazhi" }
+        ],
+        "date": "2026.09.10"
+      }
+    };
+      let clients = { ...DEFAULT_CLIENTS };
       try {
         const resp = await fetch('../clients.json');
-        if (!resp.ok) return;
-        const clients = await resp.json();
+        if (resp.ok) {
+          const remote = await resp.json();
+          clients = { ...DEFAULT_CLIENTS, ...remote };
+        }
+      } catch (e) {
+        console.warn('使用内置客户数据');
+      }
 
-        const saved = sessionStorage.getItem('sf_client');
-        if (saved && clients[saved]) {
-          const client = clients[saved];
-          // 如果客户购买了多只产品或为专业机构，显示导航栏
-          if (client.products.length > 1 || client.role === 'institution') {
-            const productNav = document.getElementById('productNav');
-            const productNavBtns = document.getElementById('productNavBtns');
-            productNav.classList.add('show');
+      const saved = sessionStorage.getItem('sf_client');
+      if (saved && clients[saved]) {
+        const client = clients[saved];
+        const isInst = client.role === 'institution' || saved === 'admin';
+        const productNav = document.getElementById('productNav');
+        const productNavBtns = document.getElementById('productNavBtns');
+        const purchaseTag = document.getElementById('clientPurchaseDateTag');
 
-            if (client.role === 'institution' || saved === 'admin') {
-              const badge = document.createElement('span');
-              badge.style.cssText = 'padding:2px 8px;background:rgba(61,169,252,0.15);color:#3da9fc;font-size:12px;font-weight:600;border-radius:3px;margin-right:8px;border:1px solid rgba(61,169,252,0.3);';
-              badge.textContent = '🏛️ 专业机构认证 · 已开启深度量化指标';
-              productNav.insertBefore(badge, productNavBtns);
+        if (productNav) {
+          productNav.classList.add('show');
+          if (isInst) {
+            const badge = document.createElement('span');
+            badge.style.cssText = 'padding:2px 8px;background:rgba(61,169,252,0.15);color:#3da9fc;font-size:12px;font-weight:600;border-radius:3px;margin-right:8px;border:1px solid rgba(61,169,252,0.3);';
+            badge.textContent = '🏛️ 专业机构认证 · 已开启深度量化指标';
+            productNav.insertBefore(badge, productNavBtns);
+          } else {
+            const userTag = document.createElement('span');
+            userTag.style.cssText = 'padding:3px 10px;background:rgba(245,165,36,0.12);color:var(--brand);font-size:12px;font-weight:600;border-radius:3px;margin-right:12px;border:1px solid rgba(245,165,36,0.25);';
+            userTag.innerHTML = `👤 尊敬的客户【${client.name}】 · 购买产品日期：<b>${client.date}</b>`;
+            productNav.insertBefore(userTag, productNavBtns);
+            if (purchaseTag && client.date) {
+              purchaseTag.textContent = '购买产品日期：' + client.date;
+              purchaseTag.style.display = 'inline';
             }
+          }
 
-            // 生成产品按钮
+          if (client.products && client.products.length > 1 && productNavBtns) {
             client.products.forEach(product => {
               const btn = document.createElement('a');
               btn.href = `../${product.code}/`;
@@ -319,8 +396,6 @@
             });
           }
         }
-      } catch (e) {
-        console.error('检查登录状态失败:', e);
       }
     }
 
@@ -359,7 +434,8 @@
           <div class="header-left">
             <div class="brand"><div class="brand-icon">晟</div><span>晟孚资本</span></div>
             <div class="fund-name">晟孚泽鑫周期私募证券投资基金</div>
-            <div class="fund-meta">基金代码：XY2338 · 基金经理：张璇 · 私募基金管理人备案编号：P1010913</div>
+            <div class="fund-meta">
+        <span id="clientPurchaseDateTag" style="display:none;color:var(--brand);font-weight:600;"></span>基金代码：XY2338 · 基金经理：张璇 · 私募基金管理人备案编号：P1010913</div>
           </div>
           <div class="header-right">
             <div class="badge">MONTHLY REPORT</div>
@@ -432,12 +508,12 @@
                     <button type="button" class="inst-icon-btn" id="btnInstToggle" title="收起/展开面板">«</button>
                   </div>
                 </div>
-                <!-- 22项指标列表 -->
+                <!-- 20项深度指标列表 -->
                 <div class="inst-metrics-list" id="instMetricsList"></div>
                 <!-- 未解锁提示遮罩 -->
                 <div class="inst-lock-overlay" id="instLockOverlay" style="display:none;">
                   <div class="inst-lock-title">🔒 专业机构深度量化指标</div>
-                  <div class="inst-lock-desc">包含 Alpha、Beta、跟踪误差等 22 项全量指标，请输入机构密码解锁查看。</div>
+                  <div class="inst-lock-desc">包含 Alpha、Beta、跟踪误差等 20 项深度量化指标，请输入机构密码解锁查看。</div>
                   <input type="password" id="instQuickPass" class="inst-unlock-input" placeholder="请输入密码">
                   <button type="button" id="btnInstUnlock" class="inst-unlock-btn">一键解锁</button>
                   <div id="instUnlockErr" style="color:var(--rise);font-size:11px;margin-top:6px;"></div>
@@ -711,7 +787,7 @@
       });
 
       // ============================================================
-      // 专业机构 22 项量化指标定义与渲染（严格遵照图片中数据名称）
+      // 专业机构 20 项深度量化指标定义与渲染（严格遵照图片中数据名称）
       // ============================================================
       const INST_METRICS = [
         { name: '绝对回报', tip: '统计区间内基金累计净值的累计涨跌幅', val: '372.26%', type: 'rise' },
@@ -734,8 +810,6 @@
         { name: '周胜率', tip: null, val: '54.27%', type: 'rise' },
         { name: '月胜率', tip: null, val: '63.24%', type: 'rise' },
         { name: 'Calmar', tip: '卡玛比率，年化收益率与历史最大回撤之比', val: '0.99', type: 'rise' },
-        { name: '换手率', tip: '报告期内股票买卖总量占资产净值的周转频率', val: '385.14%', type: 'neutral' },
-        { name: '平均持仓天数', tip: '投资组合中持仓股票的加权平均持有天数', val: '601.78', type: 'neutral' },
       ];
 
       function renderInstMetrics() {
@@ -756,9 +830,17 @@
         const saved = sessionStorage.getItem('sf_client');
         const role = sessionStorage.getItem('sf_role');
         const isInst = saved === 'admin' || role === 'institution';
+        const instPanel = document.getElementById('instPanel');
+        if (instPanel) {
+          // 个人投资者不显示量化指标栏目，仅专业机构显示
+          instPanel.style.display = isInst ? 'flex' : 'none';
+        }
         const lockEl = document.getElementById('instLockOverlay');
         if (lockEl) {
           lockEl.style.display = isInst ? 'none' : 'flex';
+        }
+        if (typeof navChart !== 'undefined' && navChart) {
+          navChart.resize();
         }
       }
 
